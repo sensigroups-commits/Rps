@@ -34,8 +34,6 @@
             --card-bg: rgba(20, 20, 30, 0.8);
             --border-color: rgba(255, 255, 255, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.5);
-            --theme-color: #1e1e2e;
-            --theme-text: #ffffff;
         }
 
         [data-theme="light"] {
@@ -46,8 +44,6 @@
             --card-bg: rgba(255, 255, 255, 0.7);
             --border-color: rgba(0, 0, 0, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --theme-color: #f0f2f5;
-            --theme-text: #1a1a1a;
         }
 
         body {
@@ -57,10 +53,8 @@
             min-height: 100vh;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
             position: relative;
-            transition: background-color 0.3s ease;
         }
 
-        /* پس‌زمینه گرادیانت */
         body::before {
             content: '';
             position: fixed;
@@ -88,7 +82,7 @@
             z-index: 1;
         }
 
-        /* ========== هدر موبایل ========== */
+        /* ========== هدر ========== */
         .header {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -177,14 +171,6 @@
             animation: iconFloat 3s ease infinite;
         }
 
-        .theme-icon span:first-child {
-            animation-delay: 0s;
-        }
-
-        .theme-icon span:last-child {
-            animation-delay: 1.5s;
-        }
-
         @keyframes iconFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-2px) rotate(10deg); }
@@ -230,7 +216,12 @@
             transform: scale(0.95);
         }
 
-        /* ========== نویگیشن بازی ========== */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== نویگیشن ========== */
         .game-nav {
             display: flex;
             gap: 8px;
@@ -251,36 +242,15 @@
             backdrop-filter: blur(10px);
             border: 1px solid var(--border-color);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .nav-btn.active {
             background: linear-gradient(135deg, var(--primary), #818cf8);
             color: white;
-            border-color: transparent;
             box-shadow: 0 0 20px var(--primary-glow);
         }
 
-        .nav-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .nav-btn:active::before {
-            width: 200px;
-            height: 200px;
-        }
-
-        /* ========== پروفایل کاربر با قاب ========== */
+        /* ========== پروفایل ========== */
         .profile-card {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -306,10 +276,10 @@
 
         .avatar-frame {
             position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
             border-radius: 50%;
             z-index: 1;
             pointer-events: none;
@@ -369,12 +339,12 @@
             margin-top: 8px;
         }
 
-        /* ========== کارت بازی ========== */
-        .game-section {
+        /* ========== بخش‌ها ========== */
+        .game-section, .shop-section {
             display: none;
         }
 
-        .game-section.active {
+        .game-section.active, .shop-section.active {
             display: block;
         }
 
@@ -387,6 +357,7 @@
             margin-bottom: 16px;
         }
 
+        /* ========== حالت بازی ========== */
         .mode-switch {
             display: flex;
             gap: 8px;
@@ -413,7 +384,7 @@
             color: white;
         }
 
-        /* ========== باکس‌های VS ========== */
+        /* ========== VS باکس ========== */
         .vs-container {
             display: flex;
             justify-content: space-between;
@@ -433,14 +404,6 @@
             animation: float 3s ease infinite;
         }
 
-        .vs-box.player {
-            animation-delay: 0s;
-        }
-
-        .vs-box.bot {
-            animation-delay: 1.5s;
-        }
-
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -455,9 +418,6 @@
         .choice-display {
             font-size: 48px;
             min-height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .vs-divider {
@@ -497,7 +457,7 @@
             50% { opacity: 1; }
         }
 
-        /* ========== دکمه منوی انتخاب عناصر ========== */
+        /* ========== دکمه‌های منو ========== */
         .choose-btn {
             width: 100%;
             padding: 16px;
@@ -518,7 +478,6 @@
             overflow: hidden;
             box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
             transition: all 0.1s;
-            z-index: 10;
         }
 
         .choose-btn:active {
@@ -542,21 +501,15 @@
         }
 
         .arrow-icon {
-            font-size: 20px;
             transition: transform 0.3s;
         }
 
-        .arrow-icon.open {
-            transform: rotate(180deg);
-        }
-
-        /* ========== گرید انتخاب عناصر ========== */
-        .choices-wrapper {
+        /* ========== گرید انتخاب ========== */
+        .choices-wrapper, .guide-wrapper {
             max-height: 0;
             opacity: 0;
             overflow: hidden;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-top: 0;
             background: var(--card-bg);
             border-radius: 30px;
             border: 1px solid var(--border-color);
@@ -564,7 +517,7 @@
             transform-origin: top;
         }
 
-        .choices-wrapper.open {
+        .choices-wrapper.open, .guide-wrapper.open {
             max-height: 400px;
             opacity: 1;
             margin-top: 10px;
@@ -572,30 +525,21 @@
             overflow-y: auto;
         }
 
-        .choices-grid {
+        .choices-grid, .guide-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             padding: 16px;
         }
 
-        .choice-item {
+        .choice-item, .guide-item {
             background: var(--card-bg);
             border: 2px solid var(--border-color);
             border-radius: 20px;
             padding: 12px 4px;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            animation: fadeInUp 0.5s ease backwards;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            text-align: center;
         }
 
         .choice-item:active {
@@ -614,62 +558,23 @@
             color: var(--text-secondary);
         }
 
-        /* ========== بخش راهنما ========== */
-        .guide-wrapper {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-top: 0;
-            background: var(--card-bg);
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-            transform: scaleY(0);
-            transform-origin: top;
-        }
-
-        .guide-wrapper.open {
-            max-height: 500px;
-            opacity: 1;
-            margin-top: 10px;
-            transform: scaleY(1);
-            overflow-y: auto;
-        }
-
+        /* ========== راهنما ========== */
         .guide-grid {
-            display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            padding: 16px;
-        }
-
-        .guide-item {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 20px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .guide-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--primary);
         }
 
         .guide-header {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 8px;
             font-weight: bold;
         }
 
         .guide-details {
             display: none;
             font-size: 12px;
-            color: var(--text-secondary);
             padding: 8px;
+            margin-top: 8px;
             background: rgba(0,0,0,0.2);
             border-radius: 15px;
         }
@@ -678,57 +583,14 @@
             display: block;
         }
 
-        .guide-wins {
-            color: var(--success);
-            margin-bottom: 4px;
-        }
-
-        .guide-loses {
-            color: var(--danger);
-        }
-
-        .guide-emoji-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 4px;
-        }
-
-        /* ========== بخش آنلاین ========== */
-        .online-section {
-            text-align: center;
-        }
-
-        .room-controls {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .room-input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 30px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            min-width: 150px;
-        }
-
-        .room-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+        .guide-wins { color: var(--success); }
+        .guide-loses { color: var(--danger); }
 
         /* ========== لودینگ خرچنگی ========== */
         .waiting-loader {
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 30px;
             background: var(--card-bg);
             border-radius: 40px;
@@ -762,13 +624,8 @@
             top: 35px;
         }
 
-        .crab-eye.left {
-            left: 35px;
-        }
-
-        .crab-eye.right {
-            left: 53px;
-        }
+        .crab-eye.left { left: 35px; }
+        .crab-eye.right { left: 53px; }
 
         .crab-eye::after {
             content: '';
@@ -791,10 +648,10 @@
             bottom: 25px;
         }
 
-        .crab-leg.left1 { left: 25px; transform: rotate(-20deg); animation: legMove1 1s ease infinite; }
-        .crab-leg.left2 { left: 40px; transform: rotate(-30deg); animation: legMove2 1s ease infinite; }
-        .crab-leg.right1 { left: 55px; transform: rotate(20deg); animation: legMove1 1s ease infinite reverse; }
-        .crab-leg.right2 { left: 70px; transform: rotate(30deg); animation: legMove2 1s ease infinite reverse; }
+        .crab-leg.left1 { left: 25px; transform: rotate(-20deg); animation: legMove1 1s infinite; }
+        .crab-leg.left2 { left: 40px; transform: rotate(-30deg); animation: legMove2 1s infinite; }
+        .crab-leg.right1 { left: 55px; transform: rotate(20deg); animation: legMove1 1s infinite reverse; }
+        .crab-leg.right2 { left: 70px; transform: rotate(30deg); animation: legMove2 1s infinite reverse; }
 
         .crab-claw {
             position: absolute;
@@ -805,31 +662,18 @@
             top: 25px;
         }
 
-        .crab-claw.left {
-            left: 10px;
-            transform: rotate(-45deg);
-            animation: clawWave 1.5s ease infinite;
-        }
-
-        .crab-claw.right {
-            left: 65px;
-            transform: rotate(45deg);
-            animation: clawWave 1.5s ease infinite reverse;
-        }
+        .crab-claw.left { left: 10px; transform: rotate(-45deg); animation: clawWave 1.5s infinite; }
+        .crab-claw.right { left: 65px; transform: rotate(45deg); animation: clawWave 1.5s infinite reverse; }
 
         .waiting-text {
             font-family: 'Orbitron', sans-serif;
             font-size: 16px;
             color: var(--primary);
-            margin-top: 10px;
             display: flex;
             gap: 5px;
         }
 
-        .dot {
-            animation: dotPulse 1.5s ease infinite;
-        }
-
+        .dot { animation: dotPulse 1.5s infinite; }
         .dot:nth-child(2) { animation-delay: 0.5s; }
         .dot:nth-child(3) { animation-delay: 1s; }
 
@@ -859,25 +703,14 @@
         }
 
         @keyframes dotPulse {
-            0%, 100% { opacity: 0.3; transform: translateY(0); }
+            0%, 100% { opacity: 0.3; }
             50% { opacity: 1; transform: translateY(-3px); }
         }
 
-        /* ========== فروشگاه قاب‌ها ========== */
+        /* ========== فروشگاه ========== */
         .shop-section {
-            display: none;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            padding: 20px;
-            margin-top: 16px;
             max-height: 500px;
             overflow-y: auto;
-        }
-
-        .shop-section.active {
-            display: block;
         }
 
         .shop-title {
@@ -895,12 +728,6 @@
             gap: 12px;
             padding: 12px;
             border-bottom: 1px solid var(--border-color);
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
         }
 
         .frame-preview {
@@ -955,7 +782,6 @@
             padding: 8px 16px;
             border-radius: 30px;
             font-size: 12px;
-            font-weight: bold;
             cursor: pointer;
             min-width: 70px;
         }
@@ -968,7 +794,180 @@
             opacity: 0.5;
         }
 
-        /* فوتر */
+        /* ========== قاب‌های ۱ تا ۱۰۰ ========== */
+        .frame-1::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 3px solid cyan; box-shadow: 0 0 20px cyan; animation: pulse 2s infinite; }
+        .frame-2::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: conic-gradient(from 0deg, red, orange, yellow, green, blue, indigo, violet, red); animation: rotate 4s linear infinite; }
+        .frame-3::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; box-shadow: 0 0 40px magenta, 0 0 60px magenta; animation: breathe 3s infinite; }
+        .frame-4::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; box-shadow: 0 0 0 0 rgba(255,255,0,0.5); animation: glowPulse 1s infinite; }
+        .frame-5::before { content: ''; position: absolute; inset: -15px; border-radius: 50%; background: radial-gradient(circle, white, cyan, transparent); opacity: 0.7; animation: softGlow 3s infinite; }
+        .frame-6::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: repeating-linear-gradient(45deg, #ff0000, #00ff00 10px, #0000ff 20px); animation: rotate 5s linear infinite; }
+        .frame-7::before, .frame-7::after { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 2px solid transparent; border-top-color: red; border-bottom-color: blue; animation: spinPulse 2s infinite; }
+        .frame-8::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; background: repeating-radial-gradient(circle, cyan 0px, transparent 5px); animation: pulse 2s infinite; }
+        .frame-9::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; background: radial-gradient(circle, gold, transparent); filter: blur(8px); animation: tail 3s infinite; }
+        .frame-10::before, .frame-10::after { content: ''; position: absolute; border-radius: 50%; }
+        .frame-10::before { inset: -10px; border: 4px solid #ff00ff; box-shadow: 0 0 30px #ff00ff; }
+        .frame-10::after { inset: -18px; border: 2px solid #00ffff; box-shadow: 0 0 40px #00ffff; animation: rotate 10s linear infinite; }
+        .frame-11::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; background: radial-gradient(circle, #ffaa00, #ff5500, #ff2200); filter: blur(8px); animation: flameDance 0.8s infinite alternate; }
+        .frame-11::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: radial-gradient(circle, #ffff00, #ff8800, transparent); opacity: 0.7; animation: flameFlicker 0.3s infinite; }
+        .frame-12::before { content: ''; position: absolute; inset: -15px; border-radius: 50%; background: linear-gradient(45deg, #ffff00, #00ffff, #ff00ff); filter: blur(5px); animation: thunder 0.5s steps(2) infinite; }
+        .frame-13::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: radial-gradient(circle, #0000ff, #00ffff, transparent); filter: blur(10px); animation: flow 4s infinite; }
+        .frame-14::before { content: ''; position: absolute; inset: -25px; border-radius: 50%; background: radial-gradient(circle, purple, violet, transparent); filter: blur(12px); animation: magicSpin 5s infinite; }
+        .frame-14::after { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 3px solid rgba(255,215,0,0.5); box-shadow: 0 0 30px gold; animation: breathe 2s infinite; }
+        .frame-15::before, .frame-15::after { content: '✦'; position: absolute; color: white; font-size: 20px; animation: particleOrbit 3s infinite; }
+        .frame-16::before { content: ''; position: absolute; inset: -22px; border-radius: 50%; border: 2px dashed #00ff00; animation: rotate 8s linear infinite; }
+        .frame-17::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: repeating-radial-gradient(circle, #ff00ff 0px, #00ffff 5px, transparent 10px); animation: plasma 2s infinite; }
+        .frame-18::before { content: ''; position: absolute; inset: -35px; border-radius: 50%; background: radial-gradient(circle, white, red, transparent); filter: blur(10px); animation: explosion 4s infinite; }
+        .frame-19::before, .frame-19::after { content: ''; position: absolute; inset: -22px; border-radius: 50%; background: rgba(128,128,128,0.3); filter: blur(15px); animation: smokeDrift 6s infinite; }
+        .frame-20::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; box-shadow: 0 0 0 0 rgba(255,255,255,0.7); animation: energyPulse 1.5s infinite; }
+        .frame-21::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: conic-gradient(from 0deg, red, orange, yellow, green, blue, indigo, violet, red); animation: rotate 3s linear infinite; }
+        .frame-22::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); background-size: 300% 300%; animation: gradientShift 5s infinite; }
+        .frame-23::before { content: ''; position: absolute; inset: -9px; border-radius: 50%; background: linear-gradient(90deg, red, green, blue); background-size: 200% 100%; animation: slide 3s infinite; }
+        .frame-24::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2, #6b8cff); animation: breathe 4s infinite; }
+        .frame-25::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: radial-gradient(circle, gold, orange); animation: sparkle 2s infinite; }
+        .frame-26::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: linear-gradient(45deg, #8b5cf6, #3b82f6, #06b6d4); animation: pulse 3s infinite; }
+        .frame-27::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: radial-gradient(circle at 30% 50%, silver, gray); filter: drop-shadow(0 0 10px silver); }
+        .frame-28::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.1)); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3); }
+        .frame-29::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #ff6b6b, #4ecdc4, #45b7d1); opacity: 0.7; filter: blur(2px); animation: float 5s infinite; }
+        .frame-30::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: repeating-linear-gradient(45deg, red, green 20px, blue 40px); animation: wave 5s infinite; }
+        .frame-31::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 4px solid gold; box-shadow: 0 0 30px gold, inset 0 0 20px gold; }
+        .frame-32::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 3px solid #e5e4e2; box-shadow: 0 0 20px #e5e4e2, 0 0 40px silver; }
+        .frame-33::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: radial-gradient(circle, #b9f2ff, transparent); filter: drop-shadow(0 0 20px #b9f2ff); animation: sparkle 2s infinite; }
+        .frame-34::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: linear-gradient(135deg, #a5f3fc, #22d3ee, #0891b2); opacity: 0.6; filter: blur(2px); animation: breathe 3s infinite; }
+        .frame-35::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 0 0 2px rgba(255,255,255,0.3), 0 0 0 4px rgba(255,255,255,0.1); }
+        .frame-36::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: repeating-linear-gradient(45deg, silver, gray 5px); mask: radial-gradient(circle, transparent 60%, black 61%); }
+        .frame-37::before, .frame-37::after { content: ''; position: absolute; border-radius: 50%; }
+        .frame-37::before { inset: -12px; border: 3px solid gold; }
+        .frame-37::after { inset: -18px; border: 1px solid silver; transform: rotate(45deg); animation: rotate 10s linear infinite; }
+        .frame-38::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: radial-gradient(circle, black, gold); opacity: 0.8; }
+        .frame-39::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 4px solid gold; filter: drop-shadow(0 0 20px gold) drop-shadow(0 0 40px gold); animation: pulse 2s infinite; }
+        .frame-40::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: conic-gradient(from 0deg, red, green, blue, magenta, red); animation: hueRotate 4s linear infinite; }
+        .frame-41::before { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid white; animation: pulse 2s infinite; }
+        .frame-42::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 2px dotted cyan; animation: rotate 10s linear infinite; }
+        .frame-43::before { content: ''; position: absolute; inset: -7px; border-radius: 50%; border: 2px dashed magenta; animation: dashMove 2s infinite; }
+        .frame-44::before { content: ''; position: absolute; inset: -9px; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; border: 2px solid lime; animation: morph 5s infinite; }
+        .frame-45::before, .frame-45::after { content: ''; position: absolute; border-radius: 50%; border: 1px solid rgba(255,255,255,0.5); }
+        .frame-45::before { inset: -7px; } .frame-45::after { inset: -12px; animation: rotate 6s linear infinite; }
+        .frame-46::before { content: ''; position: absolute; inset: -9px; border-radius: 50%; box-shadow: 0 0 20px white; opacity: 0.5; animation: fade 3s infinite; }
+        .frame-47::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 2px solid transparent; border-top-color: cyan; border-bottom-color: magenta; animation: spinPulse 3s infinite; }
+        .frame-48::before, .frame-48::after { content: ''; position: absolute; border-radius: 50%; }
+        .frame-48::before { inset: -9px; border: 2px solid lime; clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+        .frame-48::after { inset: -14px; border: 2px solid magenta; clip-path: polygon(20% 20%, 80% 20%, 80% 80%, 20% 80%); animation: rotate 5s linear infinite; }
+        .frame-49::before { content: ''; position: absolute; inset: -22px; border-radius: 50%; background: repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(0,255,0,0.1) 5px, rgba(0,255,0,0.1) 10px); animation: scan 2s infinite; }
+        .frame-50::before { content: ''; position: absolute; inset: -7px; border-radius: 50%; box-shadow: 0 0 0 0 rgba(255,255,255,0.5); animation: breathe 3s infinite; }
+        .frame-51::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 4px solid; border-color: #00ff00 #ff0000 #0000ff #ffff00; box-shadow: 0 0 20px cyan; animation: rotate 4s linear infinite; }
+        .frame-52::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: repeating-linear-gradient(45deg, magenta, cyan 10px); filter: blur(2px); animation: glitch 0.3s infinite; }
+        .frame-53::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 4px solid; border-image: repeating-linear-gradient(45deg, black, white 5px) 1; }
+        .frame-54::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #ff6b6b, #4ecdc4, #45b7d1); mix-blend-mode: screen; animation: pulse 2s infinite; }
+        .frame-55::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 4px solid magenta; filter: drop-shadow(0 0 10px magenta) drop-shadow(0 0 20px cyan); animation: flicker 2s infinite; }
+        .frame-56::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: repeating-radial-gradient(circle, lime, blue 10px, magenta 20px); animation: scan 3s infinite; }
+        .frame-57::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; background: repeating-linear-gradient(90deg, lime, lime 2px, transparent 2px, transparent 10px); animation: matrix 2s infinite; }
+        .frame-58::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: linear-gradient(45deg, red, green, blue); filter: blur(3px); animation: glitch 0.2s infinite; }
+        .frame-58::after { content: ''; position: absolute; inset: -7px; border-radius: 50%; border: 3px solid white; opacity: 0.3; animation: glitchBorder 0.3s infinite; }
+        .frame-59::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 3px solid; border-color: red green blue; animation: rotate 2s linear infinite; }
+        .frame-60::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; background: conic-gradient(from 0deg, lime, yellow, red, lime); mask: radial-gradient(circle, transparent 65%, black 66%); animation: level 3s linear infinite; }
+        .frame-61::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; background: radial-gradient(circle, gold, magenta, purple); filter: blur(10px); animation: fantasyGlow 3s infinite; }
+        .frame-62::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: linear-gradient(135deg, cyan, magenta); background-size: 200% 200%; animation: mermaid 4s infinite; }
+        .frame-63::before { content: '★'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; color: gold; font-size: 30px; animation: starTwinkle 2s infinite; }
+        .frame-64::before { content: ''; position: absolute; inset: -22px; border-radius: 50%; background: radial-gradient(circle, #000428, #004e92, #000428); opacity: 0.8; animation: galaxy 10s infinite; }
+        .frame-65::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; background: #800080; filter: blur(20px); opacity: 0.6; animation: purpleMist 5s infinite; }
+        .frame-66::before { content: ''; position: absolute; inset: -22px; border-radius: 50%; background: conic-gradient(from 0deg, #00c6ff, #0072ff, #00c6ff); filter: blur(5px); animation: aurora 6s infinite; }
+        .frame-67::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 3px solid white; animation: magicCircle 4s infinite; }
+        .frame-68::before { content: 'ᚠᚢᚦᚨᚱᚲ'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; color: rgba(255,215,0,0.5); font-size: 12px; animation: runesRotate 10s infinite; }
+        .frame-69::before { content: ''; position: absolute; inset: -28px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.8), transparent); filter: blur(20px); animation: fairyLight 3s infinite; }
+        .frame-70::before { content: ''; position: absolute; inset: -32px; border-radius: 50%; background: conic-gradient(from 0deg, cyan, magenta, yellow, cyan); filter: blur(15px); opacity: 0.7; animation: portalSpin 3s infinite; }
+        .frame-71::before { content: '🌿🌱🍃'; position: absolute; inset: -18px; display: flex; align-items: center; justify-content: center; font-size: 20px; opacity: 0.5; animation: leavesFloat 5s infinite; }
+        .frame-72::before { content: '🌸🌼🌸'; position: absolute; inset: -18px; display: flex; align-items: center; justify-content: center; font-size: 20px; animation: blossom 4s infinite; }
+        .frame-73::before { content: '❄️❄️❄️'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; font-size: 20px; animation: snow 3s infinite; }
+        .frame-74::before { content: '💧💧💧'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; font-size: 20px; animation: rain 1s infinite; }
+        .frame-75::before { content: ''; position: absolute; inset: -22px; border-radius: 50%; background: radial-gradient(circle, cyan, blue); filter: blur(10px); opacity: 0.6; animation: waterWave 4s infinite; }
+        .frame-76::before { content: ''; position: absolute; inset: -28px; border-radius: 50%; background: #708090; filter: blur(20px); opacity: 0.4; animation: smokeMist 7s infinite; }
+        .frame-77::before { content: '〇〇〇'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: rgba(255,255,255,0.5); animation: bubbles 3s infinite; }
+        .frame-78::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: #8b4513; border: 2px solid #cd853f; }
+        .frame-79::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: #808080; clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%); animation: stoneRotate 10s infinite; }
+        .frame-80::before { content: '🌲🌳🌲'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; font-size: 16px; animation: forest 6s infinite; }
+        .frame-81::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; border: 3px dashed gold; animation: rotate 4s linear infinite; }
+        .frame-82 { animation: shake 0.5s infinite; }
+        .frame-83 { animation: float 2s infinite; }
+        .frame-84::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 3px solid cyan; border-top-color: transparent; animation: timerRotate 1s linear infinite; }
+        .frame-85::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; background: repeating-radial-gradient(circle, lime 0px, transparent 5px); animation: radar 3s infinite; }
+        .frame-86::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; border: 3px solid white; filter: drop-shadow(0 0 10px cyan); animation: sineWave 2s infinite; }
+        .frame-87::before { content: '•'; position: absolute; color: white; font-size: 20px; animation: orbit 3s infinite; }
+        .frame-88 { transition: all 0.2s; } .frame-88:hover { transform: scale(1.1); filter: brightness(1.5); }
+        .frame-89:active { transform: scale(0.9); filter: hue-rotate(90deg); }
+        .frame-90::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; background: conic-gradient(from 0deg, red, yellow, green, cyan, blue, magenta, red); filter: blur(5px); animation: soundViz 0.5s infinite; }
+        .frame-91::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 4px solid #cd7f32; box-shadow: 0 0 30px #cd7f32; }
+        .frame-92::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 4px solid #c0c0c0; box-shadow: 0 0 30px silver; }
+        .frame-93::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 4px solid gold; box-shadow: 0 0 30px gold; }
+        .frame-94::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; border: 6px double gold; box-shadow: 0 0 50px gold; animation: legendaryPulse 2s infinite; }
+        .frame-95::before { content: '🏆'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 20px; animation: trophyFloat 3s infinite; }
+        .frame-96::before { content: '👑'; position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 24px; filter: drop-shadow(0 0 10px gold); }
+        .frame-97::before { content: '🔥'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; font-size: 30px; animation: streakFire 1s infinite; }
+        .frame-98::before { content: '⭐'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; font-size: 30px; animation: vipStar 2s infinite; }
+        .frame-99::before { content: '🎉'; position: absolute; inset: -12px; display: flex; align-items: center; justify-content: center; font-size: 30px; animation: eventConfetti 2s infinite; }
+        .frame-100::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; background: radial-gradient(circle, gold, orange, magenta); filter: blur(8px); opacity: 0.7; animation: prestigeGlow 3s infinite; }
+
+        /* ========== انیمیشن‌ها ========== */
+        @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
+        @keyframes breathe { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 0 5px rgba(255,255,0,0.5); } 50% { box-shadow: 0 0 0 15px rgba(255,255,0,0.2); } }
+        @keyframes spinPulse { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes tail { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
+        @keyframes flameDance { 0% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg); } 100% { transform: scale(1.2) rotate(5deg); filter: hue-rotate(20deg); } }
+        @keyframes flameFlicker { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes thunder { 0%, 100% { opacity: 0.8; filter: brightness(1); } 50% { opacity: 1; filter: brightness(2); } }
+        @keyframes flow { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes magicSpin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes particleOrbit { 0% { opacity: 0; transform: translate(0,0) rotate(0deg); } 50% { opacity: 1; } 100% { opacity: 0; transform: translate(20px,-20px) rotate(360deg); } }
+        @keyframes plasma { 0% { filter: hue-rotate(0deg) blur(2px); } 100% { filter: hue-rotate(360deg) blur(2px); } }
+        @keyframes explosion { 0% { transform: scale(0.5); opacity: 1; } 50% { transform: scale(1.8); opacity: 0.4; } 100% { transform: scale(0.5); opacity: 1; } }
+        @keyframes smokeDrift { 0% { transform: scale(1) translate(0,0); opacity: 0.3; } 33% { transform: scale(1.2) translate(5px,-5px); opacity: 0.6; } 66% { transform: scale(0.9) translate(-5px,5px); opacity: 0.4; } 100% { transform: scale(1) translate(0,0); opacity: 0.3; } }
+        @keyframes energyPulse { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); } 70% { box-shadow: 0 0 0 20px rgba(255,255,255,0); } 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
+        @keyframes softGlow { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes slide { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+        @keyframes sparkle { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.5); } }
+        @keyframes dashMove { 0% { background-position: 0 0; } 100% { background-position: 20px 0; } }
+        @keyframes morph { 0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 25% { border-radius: 50% 50% 50% 50% / 60% 40% 60% 40%; } 50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; } 75% { border-radius: 40% 60% 40% 60% / 40% 60% 40% 60%; } }
+        @keyframes fade { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        @keyframes glitch { 0% { transform: translate(0); filter: hue-rotate(0deg); } 25% { transform: translate(-2px,2px); filter: hue-rotate(90deg); } 50% { transform: translate(2px,-2px); filter: hue-rotate(180deg); } 75% { transform: translate(-2px,-2px); filter: hue-rotate(270deg); } 100% { transform: translate(0); filter: hue-rotate(360deg); } }
+        @keyframes glitchBorder { 0% { border-color: red; opacity: 0.5; } 33% { border-color: blue; opacity: 0.8; } 66% { border-color: green; opacity: 0.3; } }
+        @keyframes matrix { 0% { background-position: 0% 0%; } 100% { background-position: 0% 100%; } }
+        @keyframes level { 0% { filter: hue-rotate(0deg) brightness(1); } 50% { filter: hue-rotate(180deg) brightness(1.5); } 100% { filter: hue-rotate(360deg) brightness(1); } }
+        @keyframes timerRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes radar { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+        @keyframes sineWave { 0%, 100% { border-radius: 50%; } 25% { border-radius: 60% 40% 40% 60% / 60% 40% 60% 40%; } 50% { border-radius: 40% 60% 60% 40% / 40% 60% 40% 60%; } 75% { border-radius: 60% 40% 40% 60% / 40% 60% 60% 40%; } }
+        @keyframes orbit { 0% { transform: rotate(0deg) translate(25px) rotate(0deg); } 100% { transform: rotate(360deg) translate(25px) rotate(-360deg); } }
+        @keyframes soundViz { 0% { filter: blur(5px); opacity: 0.5; } 33% { filter: blur(15px); opacity: 1; } 66% { filter: blur(8px); opacity: 0.7; } }
+        @keyframes legendaryPulse { 0%, 100% { box-shadow: 0 0 30px gold; } 50% { box-shadow: 0 0 60px #ffaa00; } }
+        @keyframes trophyFloat { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-5px); } }
+        @keyframes streakFire { 0%, 100% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(30deg); } }
+        @keyframes vipStar { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px gold); } 50% { transform: scale(1.2); filter: drop-shadow(0 0 20px gold); } }
+        @keyframes eventConfetti { 0% { transform: rotate(0deg); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
+        @keyframes prestigeGlow { 0%, 100% { filter: blur(8px) hue-rotate(0deg); } 50% { filter: blur(15px) hue-rotate(30deg); } }
+        @keyframes leavesFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes blossom { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes snow { 0% { transform: translateY(-10px); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(10px); opacity: 0; } }
+        @keyframes rain { 0% { transform: translateY(-5px); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(5px); opacity: 0; } }
+        @keyframes waterWave { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0.8; } }
+        @keyframes smokeMist { 0%, 100% { filter: blur(20px) opacity(0.3); } 50% { filter: blur(30px) opacity(0.6); } }
+        @keyframes bubbles { 0% { transform: scale(0.5); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+        @keyframes stoneRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes forest { 0%, 100% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(30deg); } }
+        @keyframes runesRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fairyLight { 0%, 100% { filter: blur(20px) brightness(1); } 50% { filter: blur(30px) brightness(1.5); } }
+        @keyframes portalSpin { from { transform: rotate(0deg) scale(1); } to { transform: rotate(360deg) scale(1); } }
+        @keyframes galaxy { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes starTwinkle { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes mermaid { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes fantasyGlow { 0%, 100% { filter: blur(10px) hue-rotate(0deg); } 50% { filter: blur(20px) hue-rotate(30deg); } }
+        @keyframes purpleMist { 0%, 100% { filter: blur(20px) opacity(0.4); } 50% { filter: blur(30px) opacity(0.8); } }
+        @keyframes aurora { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        @keyframes magicCircle { 0% { transform: rotate(0deg) scale(1); border-color: white; } 50% { transform: rotate(180deg) scale(1.1); border-color: gold; } 100% { transform: rotate(360deg) scale(1); border-color: white; } }
+        @keyframes hueRotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+        @keyframes flicker { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.4; } }
+
         .footer {
             margin-top: 20px;
             padding: 16px;
@@ -982,37 +981,18 @@
         }
 
         @media (max-width: 400px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .header h1 {
-                text-align: center;
-            }
-            
-            .header-buttons {
-                justify-content: center;
-            }
-            
-            .profile-row {
-                justify-content: center;
-                text-align: center;
-            }
-            
-            .profile-stats {
-                justify-content: center;
-            }
+            .header { flex-direction: column; }
+            .header h1 { text-align: center; }
+            .header-buttons { justify-content: center; }
         }
     </style>
 </head>
 <body data-theme="dark">
     <div class="container">
-        <!-- هدر با دکمه‌های جدید -->
+        <!-- هدر -->
         <header class="header">
             <h1>⚡ ARENA</h1>
             <div class="header-buttons">
-                <!-- دکمه کشویی تم -->
                 <div class="theme-switch" onclick="toggleTheme()">
                     <div class="theme-slider">
                         <div class="theme-knob" id="themeKnob"></div>
@@ -1022,7 +1002,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- دکمه فروشگاه -->
                 <button class="shop-btn" onclick="showSection('shop')">
                     <span>🛒</span>
                     <span>فروشگاه</span>
@@ -1030,7 +1009,7 @@
             </div>
         </header>
 
-        <!-- پروفایل کاربر با قاب -->
+        <!-- پروفایل -->
         <div class="profile-card">
             <div class="profile-row">
                 <div class="avatar-container" id="avatarContainer">
@@ -1048,17 +1027,17 @@
             </div>
         </div>
 
-        <!-- نویگیشن بازی -->
+        <!-- نویگیشن -->
         <div class="game-nav">
             <button class="nav-btn" onclick="showSection('bot')">🤖 با ربات</button>
             <button class="nav-btn" onclick="showSection('online')">🌐 آنلاین</button>
         </div>
 
-        <!-- بخش بازی با ربات -->
-        <div id="botSection" class="game-section">
+        <!-- بخش بات -->
+        <div id="botSection" class="game-section active">
             <div class="game-card">
                 <div class="mode-switch">
-                    <div class="mode-option" onclick="setGameMode('easy')">😊 آسان</div>
+                    <div class="mode-option active" onclick="setGameMode('easy')">😊 آسان</div>
                     <div class="mode-option" onclick="setGameMode('advanced')">🔥 پیشرفته</div>
                 </div>
 
@@ -1078,7 +1057,6 @@
 
                 <div class="result-message" id="resultMessage">✨ انتخاب کنید ✨</div>
 
-                <!-- دکمه راهنما برای حالت پیشرفته -->
                 <div id="advancedGuideBtn" style="display: none;">
                     <button class="choose-btn" onclick="toggleGuide()" style="margin-bottom: 10px; background: linear-gradient(135deg, #f59e0b, #fbbf24);">
                         <span class="arrow-icon" id="guideArrow">▼</span>
@@ -1102,7 +1080,7 @@
             </div>
         </div>
 
-        <!-- بخش بازی آنلاین -->
+        <!-- بخش آنلاین -->
         <div id="onlineSection" class="game-section">
             <div class="game-card">
                 <div class="online-section">
@@ -1129,8 +1107,7 @@
 
                         <div class="result-message" id="onlineResult">منتظر حریف...</div>
 
-                        <!-- لودینگ خرچنگی -->
-                        <div id="waitingLoader" class="waiting-loader" style="display: none;">
+                        <div id="waitingLoader" class="waiting-loader">
                             <div class="crab-loader">
                                 <div class="crab-body"></div>
                                 <div class="crab-eye left"></div>
@@ -1171,7 +1148,7 @@
             </div>
         </div>
 
-        <!-- بخش فروشگاه -->
+        <!-- فروشگاه -->
         <div id="shopSection" class="shop-section">
             <div class="shop-title">
                 <span>🛒</span> قاب‌های متالیک (۱۰۰ قاب ویژه)
@@ -1188,7 +1165,7 @@
     </div>
 
     <script>
-        // ========== قوانین بازی پیشرفته ==========
+        // قوانین بازی پیشرفته
         const advancedRules = {
             'گرگ': { loses: ['تفنگ', 'سنگ', 'آتش', 'قیچی', 'مار', 'انسان', 'درخت'], wins: ['صاعقه', 'شیطان', 'اژدها', 'آب', 'باد', 'کاغذ', 'اسفنج'] },
             'درخت': { loses: ['صاعقه', 'تفنگ', 'سنگ', 'آتش', 'قیچی', 'مار', 'انسان'], wins: ['شیطان', 'اژدها', 'آب', 'باد', 'کاغذ', 'اسفنج', 'گرگ'] },
@@ -1223,7 +1200,7 @@
             ]
         };
 
-        // ========== ۱۰۰ قاب متالیک ==========
+        // ۱۰۰ قاب
         const frames = Array.from({ length: 100 }, (_, i) => ({
             id: i + 1,
             name: `قاب شماره ${i + 1}`,
@@ -1256,7 +1233,7 @@
 
         specialNames.forEach((name, idx) => { if (frames[idx]) frames[idx].name = name; });
 
-        // ========== داده‌های کاربر ==========
+        // داده‌های کاربر
         let userData = {
             name: 'کاربر',
             coins: 5000,
@@ -1265,10 +1242,7 @@
             wins: 0,
             level: 1,
             streak: 0,
-            gameStats: {
-                playerScore: 0,
-                botScore: 0
-            }
+            gameStats: { playerScore: 0, botScore: 0 }
         };
 
         let currentMode = 'easy';
@@ -1280,14 +1254,10 @@
         let playerId = Math.random().toString(36).substring(7);
         let pollInterval = null;
 
-        // ========== تلگرام WebApp ==========
         function initTelegram() {
             if (window.Telegram && Telegram.WebApp) {
-                const tg = Telegram.WebApp;
-                tg.expand();
-                tg.ready();
-                
-                const user = tg.initDataUnsafe?.user;
+                Telegram.WebApp.expand();
+                const user = Telegram.WebApp.initDataUnsafe?.user;
                 if (user) {
                     userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
                     if (user.photo_url) {
@@ -1296,28 +1266,23 @@
                 }
             }
             loadUserData();
-            // فعال کردن بخش بات به صورت پیش‌فرض
             showSection('bot');
-            document.querySelector('.mode-option').classList.add('active');
         }
 
-        // ========== localStorage ==========
         function loadUserData() {
-            const saved = localStorage.getItem('arena_complete_data');
+            const saved = localStorage.getItem('arena_data');
             if (saved) {
                 try {
-                    const parsed = JSON.parse(saved);
-                    userData = { ...userData, ...parsed };
+                    userData = { ...userData, ...JSON.parse(saved) };
                 } catch (e) {}
             }
             updateAllDisplays();
         }
 
         function saveUserData() {
-            localStorage.setItem('arena_complete_data', JSON.stringify(userData));
+            localStorage.setItem('arena_data', JSON.stringify(userData));
         }
 
-        // ========== آپدیت نمایش‌ها ==========
         function updateAllDisplays() {
             document.getElementById('userName').innerHTML = userData.name;
             document.getElementById('userWins').innerHTML = userData.wins;
@@ -1338,7 +1303,6 @@
             renderGuide();
         }
 
-        // ========== تغییر بخش‌ها ==========
         function showSection(section) {
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.game-section, .shop-section').forEach(el => el.classList.remove('active'));
@@ -1354,36 +1318,20 @@
             }
         }
 
-        // ========== تم ==========
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const newTheme = current === 'dark' ? 'light' : 'dark';
             document.body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            
-            const knob = document.getElementById('themeKnob');
-            if (newTheme === 'dark') {
-                knob.classList.add('dark');
-            } else {
-                knob.classList.remove('dark');
-            }
+            document.getElementById('themeKnob').classList.toggle('dark', newTheme === 'dark');
         }
 
-        // ========== حالت بازی ==========
         function setGameMode(mode) {
             currentMode = mode;
             document.querySelectorAll('#botSection .mode-option').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
-            // نمایش یا مخفی کردن دکمه راهنما
-            const guideBtn = document.getElementById('advancedGuideBtn');
-            if (mode === 'advanced') {
-                guideBtn.style.display = 'block';
-            } else {
-                guideBtn.style.display = 'none';
-                closeGuide();
-            }
-            
+            document.getElementById('advancedGuideBtn').style.display = mode === 'advanced' ? 'block' : 'none';
+            if (mode !== 'advanced') closeGuide();
             renderChoices();
             closeChoices();
         }
@@ -1395,24 +1343,13 @@
             renderOnlineChoices();
         }
 
-        // ========== انتخاب عناصر در بازی با ربات ==========
         function toggleChoices() {
             choicesOpen = !choicesOpen;
             const wrapper = document.getElementById('choicesWrapper');
-            const arrow = document.getElementById('arrowIcon');
-            const arrow2 = document.getElementById('arrowIcon2');
-            
-            if (choicesOpen) {
-                wrapper.classList.add('open');
-                arrow.style.transform = 'rotate(180deg)';
-                arrow2.style.transform = 'rotate(180deg)';
-                document.getElementById('btnText').innerHTML = 'بستن منو';
-            } else {
-                wrapper.classList.remove('open');
-                arrow.style.transform = 'rotate(0deg)';
-                arrow2.style.transform = 'rotate(0deg)';
-                document.getElementById('btnText').innerHTML = 'عناصر را انتخاب کنید';
-            }
+            const arrows = document.querySelectorAll('#botSection .arrow-icon');
+            wrapper.classList.toggle('open', choicesOpen);
+            arrows.forEach(arrow => arrow.style.transform = choicesOpen ? 'rotate(180deg)' : 'rotate(0deg)');
+            document.getElementById('btnText').innerHTML = choicesOpen ? 'بستن منو' : 'عناصر را انتخاب کنید';
         }
 
         function closeChoices() {
@@ -1421,10 +1358,8 @@
 
         function renderChoices() {
             const grid = document.getElementById('choicesGrid');
-            const currentElements = elements[currentMode];
-            
-            grid.innerHTML = currentElements.map((el, index) => `
-                <div class="choice-item" onclick="selectChoice('${el.name}', '${el.emoji}')" style="animation-delay: ${index * 0.1}s">
+            grid.innerHTML = elements[currentMode].map((el, i) => `
+                <div class="choice-item" onclick="selectChoice('${el.name}', '${el.emoji}')" style="animation-delay: ${i*0.1}s">
                     <span class="choice-emoji">${el.emoji}</span>
                     <span class="choice-name">${el.name}</span>
                 </div>
@@ -1433,11 +1368,9 @@
 
         function selectChoice(playerChoice, playerEmoji) {
             if (navigator.vibrate) navigator.vibrate(50);
-            
             document.getElementById('playerChoice').innerHTML = playerEmoji;
             
-            const currentElements = elements[currentMode];
-            const botElement = currentElements[Math.floor(Math.random() * currentElements.length)];
+            const botElement = elements[currentMode][Math.floor(Math.random() * elements[currentMode].length)];
             document.getElementById('botChoice').innerHTML = botElement.emoji;
             
             const result = determineWinner(playerChoice, botElement.name, currentMode);
@@ -1469,7 +1402,6 @@
 
         function determineWinner(player, opponent, mode) {
             if (player === opponent) return 'مساوی';
-            
             if (mode === 'easy') {
                 if (player === 'سنگ' && opponent === 'قیچی') return 'برد';
                 if (player === 'کاغذ' && opponent === 'سنگ') return 'برد';
@@ -1483,19 +1415,10 @@
             }
         }
 
-        // ========== راهنما ==========
         function toggleGuide() {
             guideOpen = !guideOpen;
-            const wrapper = document.getElementById('guideWrapper');
-            const arrow = document.getElementById('guideArrow');
-            
-            if (guideOpen) {
-                wrapper.classList.add('open');
-                arrow.style.transform = 'rotate(180deg)';
-            } else {
-                wrapper.classList.remove('open');
-                arrow.style.transform = 'rotate(0deg)';
-            }
+            document.getElementById('guideWrapper').classList.toggle('open', guideOpen);
+            document.getElementById('guideArrow').style.transform = guideOpen ? 'rotate(180deg)' : 'rotate(0deg)';
         }
 
         function closeGuide() {
@@ -1504,62 +1427,41 @@
 
         function renderGuide() {
             const grid = document.getElementById('guideGrid');
-            const elements_list = Object.keys(advancedRules);
-            
-            grid.innerHTML = elements_list.map(el => {
+            grid.innerHTML = Object.keys(advancedRules).map(el => {
                 const rule = advancedRules[el];
                 const emoji = getEmoji(el);
                 return `
-                    <div class="guide-item" onclick="toggleGuideItem(this)">
-                        <div class="guide-header">
-                            <span>${emoji}</span>
-                            <span>${el}</span>
-                        </div>
+                    <div class="guide-item" onclick="this.classList.toggle('active')">
+                        <div class="guide-header"><span>${emoji}</span><span>${el}</span></div>
                         <div class="guide-details">
-                            <div class="guide-wins">✅ می‌برد: ${rule.wins.map(w => getEmoji(w)).join(' ')}</div>
-                            <div class="guide-loses">❌ می‌بازد: ${rule.loses.map(l => getEmoji(l)).join(' ')}</div>
+                            <div class="guide-wins">✅ ${rule.wins.map(w => getEmoji(w)).join(' ')}</div>
+                            <div class="guide-loses">❌ ${rule.loses.map(l => getEmoji(l)).join(' ')}</div>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function toggleGuideItem(item) {
-            item.classList.toggle('active');
-        }
-
         function getEmoji(name) {
-            const emojiMap = {
-                'گرگ': '🐺', 'درخت': '🌳', 'انسان': '👤', 'مار': '🐍', 'قیچی': '✂️',
-                'آتش': '🔥', 'سنگ': '🪨', 'تفنگ': '🔫', 'صاعقه': '⚡', 'شیطان': '😈',
-                'اژدها': '🐉', 'آب': '💧', 'باد': '🌪️', 'کاغذ': '📄', 'اسفنج': '🧽'
+            const map = {
+                'گرگ':'🐺', 'درخت':'🌳', 'انسان':'👤', 'مار':'🐍', 'قیچی':'✂️',
+                'آتش':'🔥', 'سنگ':'🪨', 'تفنگ':'🔫', 'صاعقه':'⚡', 'شیطان':'😈',
+                'اژدها':'🐉', 'آب':'💧', 'باد':'🌪️', 'کاغذ':'📄', 'اسفنج':'🧽'
             };
-            return emojiMap[name] || '❓';
+            return map[name] || '❓';
         }
 
-        // ========== بازی آنلاین ==========
         function toggleOnlineChoices() {
             onlineChoicesOpen = !onlineChoicesOpen;
-            const wrapper = document.getElementById('onlineChoicesWrapper');
-            const arrow = document.getElementById('onlineArrowIcon');
-            
-            if (onlineChoicesOpen) {
-                wrapper.classList.add('open');
-                arrow.style.transform = 'rotate(180deg)';
-                document.getElementById('onlineBtnText').innerHTML = 'بستن منو';
-            } else {
-                wrapper.classList.remove('open');
-                arrow.style.transform = 'rotate(0deg)';
-                document.getElementById('onlineBtnText').innerHTML = 'عناصر را انتخاب کنید';
-            }
+            document.getElementById('onlineChoicesWrapper').classList.toggle('open', onlineChoicesOpen);
+            document.getElementById('onlineArrowIcon').style.transform = onlineChoicesOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+            document.getElementById('onlineBtnText').innerHTML = onlineChoicesOpen ? 'بستن منو' : 'عناصر را انتخاب کنید';
         }
 
         function renderOnlineChoices() {
             const grid = document.getElementById('onlineChoicesGrid');
-            const currentElements = elements[onlineMode];
-            
-            grid.innerHTML = currentElements.map((el, index) => `
-                <div class="choice-item" onclick="selectOnlineChoice('${el.name}', '${el.emoji}')" style="animation-delay: ${index * 0.1}s">
+            grid.innerHTML = elements[onlineMode].map((el, i) => `
+                <div class="choice-item" onclick="selectOnlineChoice('${el.name}', '${el.emoji}')" style="animation-delay: ${i*0.1}s">
                     <span class="choice-emoji">${el.emoji}</span>
                     <span class="choice-name">${el.name}</span>
                 </div>
@@ -1569,17 +1471,10 @@
         function createRoom() {
             const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
             document.getElementById('roomId').value = roomId;
-            
             currentRoom = roomId;
-            const gameState = {
-                room: roomId,
-                players: { [playerId]: { name: userData.name, ready: false } },
-                choices: {},
-                mode: onlineMode
-            };
-            
-            localStorage.setItem(`game_${roomId}`, JSON.stringify(gameState));
-            
+            localStorage.setItem(`game_${roomId}`, JSON.stringify({
+                room: roomId, players: { [playerId]: { name: userData.name } }, choices: {}, mode: onlineMode
+            }));
             document.getElementById('onlineGameArea').style.display = 'block';
             document.getElementById('waitingLoader').style.display = 'flex';
             startPolling(roomId);
@@ -1587,28 +1482,16 @@
 
         function joinRoom() {
             const roomId = document.getElementById('roomId').value.toUpperCase();
-            if (!roomId) {
-                alert('لطفاً کد اتاق را وارد کنید!');
-                return;
-            }
-            
+            if (!roomId) return alert('کد اتاق را وارد کنید!');
             const saved = localStorage.getItem(`game_${roomId}`);
-            if (!saved) {
-                alert('اتاقی با این کد وجود ندارد!');
-                return;
-            }
+            if (!saved) return alert('اتاق وجود ندارد!');
             
             currentRoom = roomId;
-            const gameState = JSON.parse(saved);
+            const state = JSON.parse(saved);
+            if (Object.keys(state.players).length >= 2) return alert('اتاق پر است!');
             
-            if (Object.keys(gameState.players).length >= 2) {
-                alert('اتاق پر است!');
-                return;
-            }
-            
-            gameState.players[playerId] = { name: userData.name, ready: false };
-            localStorage.setItem(`game_${roomId}`, JSON.stringify(gameState));
-            
+            state.players[playerId] = { name: userData.name };
+            localStorage.setItem(`game_${roomId}`, JSON.stringify(state));
             document.getElementById('onlineGameArea').style.display = 'block';
             document.getElementById('waitingLoader').style.display = 'none';
             startPolling(roomId);
@@ -1616,68 +1499,49 @@
 
         function startPolling(roomId) {
             if (pollInterval) clearInterval(pollInterval);
-            
             pollInterval = setInterval(() => {
                 if (!currentRoom) return;
-                
                 const saved = localStorage.getItem(`game_${currentRoom}`);
-                if (saved) {
-                    const state = JSON.parse(saved);
-                    
-                    if (state.choices && state.choices[playerId]) {
-                        const choice = state.choices[playerId];
-                        const elements_list = elements[state.mode || 'easy'];
-                        const element = elements_list.find(e => e.name === choice);
-                        if (element) {
-                            document.getElementById('onlinePlayerChoice').innerHTML = element.emoji;
+                if (!saved) return;
+                
+                const state = JSON.parse(saved);
+                if (state.choices?.[playerId]) {
+                    const el = elements[state.mode || 'easy'].find(e => e.name === state.choices[playerId]);
+                    if (el) document.getElementById('onlinePlayerChoice').innerHTML = el.emoji;
+                }
+                
+                const opponentId = Object.keys(state.players || {}).find(id => id !== playerId);
+                if (opponentId && state.choices?.[opponentId]) {
+                    document.getElementById('waitingLoader').style.display = 'none';
+                    const el = elements[state.mode || 'easy'].find(e => e.name === state.choices[opponentId]);
+                    if (el) {
+                        document.getElementById('onlineOpponentChoice').innerHTML = el.emoji;
+                        if (state.choices[playerId]) {
+                            const res = determineWinner(state.choices[playerId], state.choices[opponentId], state.mode || 'easy');
+                            document.getElementById('onlineResult').innerHTML = 
+                                res === 'برد' ? '🏆 شما برنده شدید!' : res === 'باخت' ? '💔 حریف برنده شد!' : '🤝 مساوی!';
                         }
                     }
-                    
-                    const opponentId = Object.keys(state.players || {}).find(id => id !== playerId);
-                    if (opponentId && state.choices && state.choices[opponentId]) {
-                        document.getElementById('waitingLoader').style.display = 'none';
-                        const choice = state.choices[opponentId];
-                        const elements_list = elements[state.mode || 'easy'];
-                        const element = elements_list.find(e => e.name === choice);
-                        if (element) {
-                            document.getElementById('onlineOpponentChoice').innerHTML = element.emoji;
-                            
-                            if (state.choices[playerId]) {
-                                const result = determineWinner(state.choices[playerId], choice, state.mode || 'easy');
-                                let resultText = '';
-                                if (result === 'برد') resultText = '🏆 شما برنده شدید!';
-                                else if (result === 'باخت') resultText = '💔 حریف برنده شد!';
-                                else resultText = '🤝 مساوی!';
-                                document.getElementById('onlineResult').innerHTML = resultText;
-                            }
-                        }
-                    } else {
-                        document.getElementById('onlineOpponentChoice').innerHTML = '❓';
-                        if (Object.keys(state.players).length < 2) {
-                            document.getElementById('waitingLoader').style.display = 'flex';
-                            document.getElementById('onlineResult').innerHTML = 'منتظر حریف...';
-                        }
+                } else {
+                    document.getElementById('onlineOpponentChoice').innerHTML = '❓';
+                    if (Object.keys(state.players).length < 2) {
+                        document.getElementById('waitingLoader').style.display = 'flex';
+                        document.getElementById('onlineResult').innerHTML = 'منتظر حریف...';
                     }
                 }
             }, 1000);
         }
 
         function selectOnlineChoice(choice, emoji) {
-            if (!currentRoom) {
-                alert('لطفاً ابتدا به یک اتاق وارد شوید!');
-                return;
-            }
-            
+            if (!currentRoom) return alert('وارد اتاق شوید!');
             document.getElementById('onlinePlayerChoice').innerHTML = emoji;
-            
             const saved = localStorage.getItem(`game_${currentRoom}`);
             if (saved) {
                 const state = JSON.parse(saved);
-                if (!state.choices) state.choices = {};
+                state.choices = state.choices || {};
                 state.choices[playerId] = choice;
                 localStorage.setItem(`game_${currentRoom}`, JSON.stringify(state));
             }
-            
             if (onlineChoicesOpen) toggleOnlineChoices();
         }
 
@@ -1688,24 +1552,17 @@
                     const state = JSON.parse(saved);
                     delete state.players[playerId];
                     if (state.choices) delete state.choices[playerId];
-                    if (Object.keys(state.players).length === 0) {
-                        localStorage.removeItem(`game_${currentRoom}`);
-                    } else {
-                        localStorage.setItem(`game_${currentRoom}`, JSON.stringify(state));
-                    }
+                    if (Object.keys(state.players).length === 0) localStorage.removeItem(`game_${currentRoom}`);
+                    else localStorage.setItem(`game_${currentRoom}`, JSON.stringify(state));
                 }
             }
-            
             if (pollInterval) clearInterval(pollInterval);
             currentRoom = null;
             document.getElementById('onlineGameArea').style.display = 'none';
-            document.getElementById('waitingLoader').style.display = 'none';
         }
 
-        // ========== فروشگاه ==========
         function renderShop() {
-            const list = document.getElementById('framesList');
-            list.innerHTML = frames.map(frame => {
+            document.getElementById('framesList').innerHTML = frames.map(frame => {
                 const isOwned = userData.ownedFrames.includes(frame.id);
                 const canBuy = userData.coins >= frame.price && !isOwned;
                 return `
@@ -1737,7 +1594,6 @@
                 userData.coins -= frame.price;
                 userData.ownedFrames.push(id);
                 saveUserData();
-                renderShop();
                 updateAllDisplays();
             }
         }
@@ -1746,26 +1602,14 @@
             userData.currentFrame = id;
             saveUserData();
             updateAllDisplays();
-            renderShop();
         }
 
-        // ========== مقداردهی اولیه ==========
+        // مقداردهی اولیه
         window.onload = function() {
-            initTelegram();
-            
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.body.setAttribute('data-theme', savedTheme);
-            
-            const knob = document.getElementById('themeKnob');
-            if (savedTheme === 'dark') {
-                knob.classList.add('dark');
-            } else {
-                knob.classList.remove('dark');
-            }
-            
-            // فعال کردن بخش بات
-            showSection('bot');
-            document.querySelector('#botSection .mode-option').classList.add('active');
+            document.getElementById('themeKnob').classList.toggle('dark', savedTheme === 'dark');
+            initTelegram();
         };
     </script>
 </body>
