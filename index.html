@@ -1130,4 +1130,643 @@
                         <div class="result-message" id="onlineResult">منتظر حریف...</div>
 
                         <!-- لودینگ خرچنگی -->
-                        <div id="
+                        <div id="waitingLoader" class="waiting-loader" style="display: none;">
+                            <div class="crab-loader">
+                                <div class="crab-body"></div>
+                                <div class="crab-eye left"></div>
+                                <div class="crab-eye right"></div>
+                                <div class="crab-leg left1"></div>
+                                <div class="crab-leg left2"></div>
+                                <div class="crab-leg right1"></div>
+                                <div class="crab-leg right2"></div>
+                                <div class="crab-claw left"></div>
+                                <div class="crab-claw right"></div>
+                            </div>
+                            <div class="waiting-text">
+                                <span>در انتظار حریف</span>
+                                <span class="dot">.</span>
+                                <span class="dot">.</span>
+                                <span class="dot">.</span>
+                            </div>
+                        </div>
+
+                        <div class="mode-switch" style="margin-top: 20px;">
+                            <div class="mode-option active" onclick="setOnlineMode('easy')">😊 آسان</div>
+                            <div class="mode-option" onclick="setOnlineMode('advanced')">🔥 پیشرفته</div>
+                        </div>
+
+                        <button class="choose-btn" onclick="toggleOnlineChoices()">
+                            <span class="arrow-icon" id="onlineArrowIcon">▼</span>
+                            <span id="onlineBtnText">عناصر را انتخاب کنید</span>
+                            <span class="arrow-icon">▼</span>
+                        </button>
+
+                        <div class="choices-wrapper" id="onlineChoicesWrapper">
+                            <div class="choices-grid" id="onlineChoicesGrid"></div>
+                        </div>
+
+                        <button class="choose-btn" onclick="leaveRoom()" style="background: linear-gradient(135deg, #ef4444, #dc2626); margin-top: 10px;">خروج از اتاق</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- بخش فروشگاه -->
+        <div id="shopSection" class="shop-section">
+            <div class="shop-title">
+                <span>🛒</span> قاب‌های متالیک (۱۰۰ قاب ویژه)
+            </div>
+            <div id="framesList"></div>
+        </div>
+
+        <!-- فوتر -->
+        <div class="footer">
+            <span>🔥 Streak: <span id="streakDisplay">۰</span></span>
+            <span style="margin: 0 15px;">•</span>
+            <span>💾 ذخیره خودکار</span>
+        </div>
+    </div>
+
+    <script>
+        // ========== قوانین بازی پیشرفته ==========
+        const advancedRules = {
+            'گرگ': { loses: ['تفنگ', 'سنگ', 'آتش', 'قیچی', 'مار', 'انسان', 'درخت'], wins: ['صاعقه', 'شیطان', 'اژدها', 'آب', 'باد', 'کاغذ', 'اسفنج'] },
+            'درخت': { loses: ['صاعقه', 'تفنگ', 'سنگ', 'آتش', 'قیچی', 'مار', 'انسان'], wins: ['شیطان', 'اژدها', 'آب', 'باد', 'کاغذ', 'اسفنج', 'گرگ'] },
+            'انسان': { loses: ['قیچی', 'آتش', 'سنگ', 'تفنگ', 'صاعقه', 'شیطان'], wins: ['درخت', 'گرگ', 'اسفنج', 'کاغذ', 'باد', 'آب', 'اژدها'] },
+            'مار': { loses: ['قیچی', 'آتش', 'سنگ', 'تفنگ', 'صاعقه', 'اژدها', 'شیطان'], wins: ['آب', 'باد', 'کاغذ', 'اسفنج', 'گرگ', 'درخت', 'انسان'] },
+            'قیچی': { loses: ['آتش', 'سنگ', 'تفنگ', 'صاعقه', 'شیطان', 'اژدها', 'آب'], wins: ['مار', 'انسان', 'درخت', 'گرگ', 'اسفنج', 'کاغذ', 'باد'] },
+            'آتش': { loses: ['سنگ', 'تفنگ', 'صاعقه', 'شیطان', 'اژدها', 'آب', 'باد'], wins: ['کاغذ', 'اسفنج', 'گرگ', 'درخت', 'انسان', 'مار', 'قیچی'] },
+            'سنگ': { loses: ['تفنگ', 'صاعقه', 'شیطان', 'اژدها', 'آب', 'باد', 'کاغذ'], wins: ['اسفنج', 'گرگ', 'درخت', 'انسان', 'مار', 'قیچی', 'آتش'] },
+            'تفنگ': { loses: ['صاعقه', 'شیطان', 'اژدها', 'آب', 'باد', 'کاغذ', 'اسفنج'], wins: ['گرگ', 'درخت', 'انسان', 'مار', 'قیچی', 'آتش', 'سنگ'] },
+            'صاعقه': { loses: ['شیطان', 'اژدها', 'آب', 'باد', 'کاغذ', 'اسفنج', 'گرگ'], wins: ['درخت', 'انسان', 'مار', 'قیچی', 'آتش', 'سنگ', 'تفنگ'] },
+            'شیطان': { loses: ['اژدها', 'آب', 'باد', 'کاغذ', 'اسفنج', 'گرگ', 'درخت'], wins: ['انسان', 'مار', 'قیچی', 'آتش', 'سنگ', 'تفنگ', 'صاعقه'] },
+            'اژدها': { loses: ['آب', 'باد', 'کاغذ', 'اسفنج', 'گرگ', 'درخت', 'انسان'], wins: ['مار', 'قیچی', 'آتش', 'سنگ', 'تفنگ', 'صاعقه', 'شیطان'] },
+            'آب': { loses: ['باد', 'کاغذ', 'اسفنج', 'گرگ', 'درخت', 'انسان', 'مار'], wins: ['قیچی', 'آتش', 'سنگ', 'تفنگ', 'صاعقه', 'شیطان', 'اژدها'] },
+            'باد': { loses: ['کاغذ', 'اسفنج', 'گرگ', 'درخت', 'انسان', 'مار', 'قیچی'], wins: ['آتش', 'سنگ', 'تفنگ', 'صاعقه', 'اژدها', 'شیطان', 'آب'] },
+            'کاغذ': { loses: ['اسفنج', 'گرگ', 'درخت', 'انسان', 'مار', 'قیچی', 'آتش'], wins: ['سنگ', 'تفنگ', 'صاعقه', 'شیطان', 'اژدها', 'آب', 'باد'] },
+            'اسفنج': { loses: ['گرگ', 'درخت', 'انسان', 'مار', 'قیچی', 'آتش', 'سنگ'], wins: ['تفنگ', 'صاعقه', 'شیطان', 'اژدها', 'آب', 'باد', 'کاغذ'] }
+        };
+
+        // عناصر بازی
+        const elements = {
+            easy: [
+                { name: 'سنگ', emoji: '🪨' },
+                { name: 'کاغذ', emoji: '📄' },
+                { name: 'قیچی', emoji: '✂️' }
+            ],
+            advanced: [
+                { name: 'سنگ', emoji: '🪨' }, { name: 'کاغذ', emoji: '📄' }, { name: 'قیچی', emoji: '✂️' },
+                { name: 'تفنگ', emoji: '🔫' }, { name: 'صاعقه', emoji: '⚡' }, { name: 'شیطان', emoji: '😈' },
+                { name: 'اژدها', emoji: '🐉' }, { name: 'آب', emoji: '💧' }, { name: 'باد', emoji: '🌪️' },
+                { name: 'اسفنج', emoji: '🧽' }, { name: 'گرگ', emoji: '🐺' }, { name: 'درخت', emoji: '🌳' },
+                { name: 'انسان', emoji: '👤' }, { name: 'مار', emoji: '🐍' }, { name: 'آتش', emoji: '🔥' }
+            ]
+        };
+
+        // ========== ۱۰۰ قاب متالیک ==========
+        const frames = Array.from({ length: 100 }, (_, i) => ({
+            id: i + 1,
+            name: `قاب شماره ${i + 1}`,
+            class: `frame-${i + 1}`,
+            price: Math.floor((i + 1) * 100)
+        }));
+
+        const specialNames = [
+            'نئون ساده', 'نئون گرادیانت', 'گلو تنفسی', 'گلو ضربانی', 'هاله نور نرم',
+            'نور RGB چرخشی', 'نور لیزری', 'نور موجی', 'نور دنباله‌دار', 'گلو دوبل',
+            'شعله آتش', 'برق صاعقه‌ای', 'انرژی آبی', 'هاله جادویی', 'ذرات انرژی',
+            'موج انرژی', 'حلقه پلاسما', 'انفجار آرام', 'دود نرم', 'پالس انرژی',
+            'گرادیانت چرخان', 'رنگین‌کمانی', 'خطی متحرک', 'گرادیانت مورب', 'گرادیانت طلایی',
+            'بنفش-آبی', 'متالیک', 'شیشه‌ای', 'نرم پریمیوم', 'گرادیانت موجی',
+            'طلایی براق', 'پلاتینیومی', 'الماسی', 'کریستالی', 'شیشه تراش',
+            'متال برس‌خورده', 'سلطنتی', 'مشکی طلایی', 'VIP', 'هولوگرافیک',
+            'خط نازک', 'نقطه‌چین', 'dashed متحرک', 'گوشه‌دار مدرن', 'دوخطی ظریف',
+            'محو شونده', 'نیمه‌دایره', 'گوشه نورانی', 'خط اسکن', 'مینیمال تنفسی',
+            'HUD گیمری', 'سایبرپانک', 'پیکسلی', 'آرکید', 'رترو گیم',
+            'دیجیتال اسکن', 'ماتریکسی', 'گلیچ', 'لیزری گیم', 'XP لول‌دار',
+            'جادویی', 'پری دریایی', 'ستاره‌ای', 'کهکشانی', 'مه بنفش',
+            'شفق قطبی', 'گرد جادویی', 'رون‌های باستانی', 'نور پری', 'پورتال',
+            'برگ‌های متحرک', 'شکوفه‌های شناور', 'برف در حال بارش', 'باران نرم', 'موج آب',
+            'دود مه‌آلود', 'حباب‌های آب', 'قاب چوبی', 'قاب سنگی', 'جنگلی',
+            'چرخان کامل', 'لرزشی نرم', 'bounce آرام', 'تایمر دورانی', 'اسکن راداری',
+            'موج سینوسی', 'orbit ذرات', 'دنبال‌کننده موس', 'واکنشی به کلیک', 'visualizer',
+            'برنزی', 'نقره‌ای', 'طلایی رنک', 'افسانه‌ای', 'قهرمان فصل',
+            'تاپ لیدربورد', 'استریک بالا', 'VIP ویژه', 'ایونت محدود', 'پرستیژ'
+        ];
+
+        specialNames.forEach((name, idx) => { if (frames[idx]) frames[idx].name = name; });
+
+        // ========== داده‌های کاربر ==========
+        let userData = {
+            name: 'کاربر',
+            coins: 5000,
+            ownedFrames: [1],
+            currentFrame: 1,
+            wins: 0,
+            level: 1,
+            streak: 0,
+            gameStats: {
+                playerScore: 0,
+                botScore: 0
+            }
+        };
+
+        let currentMode = 'easy';
+        let onlineMode = 'easy';
+        let choicesOpen = false;
+        let guideOpen = false;
+        let onlineChoicesOpen = false;
+        let currentRoom = null;
+        let playerId = Math.random().toString(36).substring(7);
+        let pollInterval = null;
+
+        // ========== تلگرام WebApp ==========
+        function initTelegram() {
+            if (window.Telegram && Telegram.WebApp) {
+                const tg = Telegram.WebApp;
+                tg.expand();
+                tg.ready();
+                
+                const user = tg.initDataUnsafe?.user;
+                if (user) {
+                    userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+                    if (user.photo_url) {
+                        document.getElementById('avatarImg').innerHTML = `<img src="${user.photo_url}" style="width:100%;height:100%;object-fit:cover;">`;
+                    }
+                }
+            }
+            loadUserData();
+            // فعال کردن بخش بات به صورت پیش‌فرض
+            showSection('bot');
+            document.querySelector('.mode-option').classList.add('active');
+        }
+
+        // ========== localStorage ==========
+        function loadUserData() {
+            const saved = localStorage.getItem('arena_complete_data');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    userData = { ...userData, ...parsed };
+                } catch (e) {}
+            }
+            updateAllDisplays();
+        }
+
+        function saveUserData() {
+            localStorage.setItem('arena_complete_data', JSON.stringify(userData));
+        }
+
+        // ========== آپدیت نمایش‌ها ==========
+        function updateAllDisplays() {
+            document.getElementById('userName').innerHTML = userData.name;
+            document.getElementById('userWins').innerHTML = userData.wins;
+            document.getElementById('userLevel').innerHTML = userData.level;
+            document.getElementById('userCoins').innerHTML = `💰 ${userData.coins}`;
+            document.getElementById('playerScore').innerHTML = userData.gameStats.playerScore;
+            document.getElementById('botScore').innerHTML = userData.gameStats.botScore;
+            document.getElementById('streakDisplay').innerHTML = userData.streak;
+            
+            const frame = frames.find(f => f.id === userData.currentFrame);
+            if (frame) {
+                document.getElementById('avatarFrame').className = `avatar-frame ${frame.class}`;
+            }
+            
+            renderShop();
+            renderChoices();
+            renderOnlineChoices();
+            renderGuide();
+        }
+
+        // ========== تغییر بخش‌ها ==========
+        function showSection(section) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.game-section, .shop-section').forEach(el => el.classList.remove('active'));
+            
+            if (section === 'bot') {
+                document.querySelectorAll('.nav-btn')[0].classList.add('active');
+                document.getElementById('botSection').classList.add('active');
+            } else if (section === 'online') {
+                document.querySelectorAll('.nav-btn')[1].classList.add('active');
+                document.getElementById('onlineSection').classList.add('active');
+            } else if (section === 'shop') {
+                document.getElementById('shopSection').classList.add('active');
+            }
+        }
+
+        // ========== تم ==========
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const knob = document.getElementById('themeKnob');
+            if (newTheme === 'dark') {
+                knob.classList.add('dark');
+            } else {
+                knob.classList.remove('dark');
+            }
+        }
+
+        // ========== حالت بازی ==========
+        function setGameMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('#botSection .mode-option').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // نمایش یا مخفی کردن دکمه راهنما
+            const guideBtn = document.getElementById('advancedGuideBtn');
+            if (mode === 'advanced') {
+                guideBtn.style.display = 'block';
+            } else {
+                guideBtn.style.display = 'none';
+                closeGuide();
+            }
+            
+            renderChoices();
+            closeChoices();
+        }
+
+        function setOnlineMode(mode) {
+            onlineMode = mode;
+            document.querySelectorAll('#onlineSection .mode-option').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderOnlineChoices();
+        }
+
+        // ========== انتخاب عناصر در بازی با ربات ==========
+        function toggleChoices() {
+            choicesOpen = !choicesOpen;
+            const wrapper = document.getElementById('choicesWrapper');
+            const arrow = document.getElementById('arrowIcon');
+            const arrow2 = document.getElementById('arrowIcon2');
+            
+            if (choicesOpen) {
+                wrapper.classList.add('open');
+                arrow.style.transform = 'rotate(180deg)';
+                arrow2.style.transform = 'rotate(180deg)';
+                document.getElementById('btnText').innerHTML = 'بستن منو';
+            } else {
+                wrapper.classList.remove('open');
+                arrow.style.transform = 'rotate(0deg)';
+                arrow2.style.transform = 'rotate(0deg)';
+                document.getElementById('btnText').innerHTML = 'عناصر را انتخاب کنید';
+            }
+        }
+
+        function closeChoices() {
+            if (choicesOpen) toggleChoices();
+        }
+
+        function renderChoices() {
+            const grid = document.getElementById('choicesGrid');
+            const currentElements = elements[currentMode];
+            
+            grid.innerHTML = currentElements.map((el, index) => `
+                <div class="choice-item" onclick="selectChoice('${el.name}', '${el.emoji}')" style="animation-delay: ${index * 0.1}s">
+                    <span class="choice-emoji">${el.emoji}</span>
+                    <span class="choice-name">${el.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectChoice(playerChoice, playerEmoji) {
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            document.getElementById('playerChoice').innerHTML = playerEmoji;
+            
+            const currentElements = elements[currentMode];
+            const botElement = currentElements[Math.floor(Math.random() * currentElements.length)];
+            document.getElementById('botChoice').innerHTML = botElement.emoji;
+            
+            const result = determineWinner(playerChoice, botElement.name, currentMode);
+            const resultDiv = document.getElementById('resultMessage');
+            
+            if (result === 'برد') {
+                resultDiv.innerHTML = '🏆 بردی! +۱۰ سکه';
+                userData.gameStats.playerScore++;
+                userData.wins++;
+                userData.coins += 10;
+                userData.streak++;
+                userData.level = Math.floor(userData.wins / 10) + 1;
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            } else if (result === 'باخت') {
+                resultDiv.innerHTML = '💔 باختی!';
+                userData.gameStats.botScore++;
+                userData.streak = 0;
+                if (navigator.vibrate) navigator.vibrate(200);
+            } else {
+                resultDiv.innerHTML = '🤝 مساوی!';
+                userData.streak = 0;
+                if (navigator.vibrate) navigator.vibrate(30);
+            }
+            
+            saveUserData();
+            updateAllDisplays();
+            setTimeout(() => closeChoices(), 300);
+        }
+
+        function determineWinner(player, opponent, mode) {
+            if (player === opponent) return 'مساوی';
+            
+            if (mode === 'easy') {
+                if (player === 'سنگ' && opponent === 'قیچی') return 'برد';
+                if (player === 'کاغذ' && opponent === 'سنگ') return 'برد';
+                if (player === 'قیچی' && opponent === 'کاغذ') return 'برد';
+                return 'باخت';
+            } else {
+                const rule = advancedRules[player];
+                if (rule.wins.includes(opponent)) return 'برد';
+                if (rule.loses.includes(opponent)) return 'باخت';
+                return 'مساوی';
+            }
+        }
+
+        // ========== راهنما ==========
+        function toggleGuide() {
+            guideOpen = !guideOpen;
+            const wrapper = document.getElementById('guideWrapper');
+            const arrow = document.getElementById('guideArrow');
+            
+            if (guideOpen) {
+                wrapper.classList.add('open');
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                wrapper.classList.remove('open');
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function closeGuide() {
+            if (guideOpen) toggleGuide();
+        }
+
+        function renderGuide() {
+            const grid = document.getElementById('guideGrid');
+            const elements_list = Object.keys(advancedRules);
+            
+            grid.innerHTML = elements_list.map(el => {
+                const rule = advancedRules[el];
+                const emoji = getEmoji(el);
+                return `
+                    <div class="guide-item" onclick="toggleGuideItem(this)">
+                        <div class="guide-header">
+                            <span>${emoji}</span>
+                            <span>${el}</span>
+                        </div>
+                        <div class="guide-details">
+                            <div class="guide-wins">✅ می‌برد: ${rule.wins.map(w => getEmoji(w)).join(' ')}</div>
+                            <div class="guide-loses">❌ می‌بازد: ${rule.loses.map(l => getEmoji(l)).join(' ')}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleGuideItem(item) {
+            item.classList.toggle('active');
+        }
+
+        function getEmoji(name) {
+            const emojiMap = {
+                'گرگ': '🐺', 'درخت': '🌳', 'انسان': '👤', 'مار': '🐍', 'قیچی': '✂️',
+                'آتش': '🔥', 'سنگ': '🪨', 'تفنگ': '🔫', 'صاعقه': '⚡', 'شیطان': '😈',
+                'اژدها': '🐉', 'آب': '💧', 'باد': '🌪️', 'کاغذ': '📄', 'اسفنج': '🧽'
+            };
+            return emojiMap[name] || '❓';
+        }
+
+        // ========== بازی آنلاین ==========
+        function toggleOnlineChoices() {
+            onlineChoicesOpen = !onlineChoicesOpen;
+            const wrapper = document.getElementById('onlineChoicesWrapper');
+            const arrow = document.getElementById('onlineArrowIcon');
+            
+            if (onlineChoicesOpen) {
+                wrapper.classList.add('open');
+                arrow.style.transform = 'rotate(180deg)';
+                document.getElementById('onlineBtnText').innerHTML = 'بستن منو';
+            } else {
+                wrapper.classList.remove('open');
+                arrow.style.transform = 'rotate(0deg)';
+                document.getElementById('onlineBtnText').innerHTML = 'عناصر را انتخاب کنید';
+            }
+        }
+
+        function renderOnlineChoices() {
+            const grid = document.getElementById('onlineChoicesGrid');
+            const currentElements = elements[onlineMode];
+            
+            grid.innerHTML = currentElements.map((el, index) => `
+                <div class="choice-item" onclick="selectOnlineChoice('${el.name}', '${el.emoji}')" style="animation-delay: ${index * 0.1}s">
+                    <span class="choice-emoji">${el.emoji}</span>
+                    <span class="choice-name">${el.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function createRoom() {
+            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('roomId').value = roomId;
+            
+            currentRoom = roomId;
+            const gameState = {
+                room: roomId,
+                players: { [playerId]: { name: userData.name, ready: false } },
+                choices: {},
+                mode: onlineMode
+            };
+            
+            localStorage.setItem(`game_${roomId}`, JSON.stringify(gameState));
+            
+            document.getElementById('onlineGameArea').style.display = 'block';
+            document.getElementById('waitingLoader').style.display = 'flex';
+            startPolling(roomId);
+        }
+
+        function joinRoom() {
+            const roomId = document.getElementById('roomId').value.toUpperCase();
+            if (!roomId) {
+                alert('لطفاً کد اتاق را وارد کنید!');
+                return;
+            }
+            
+            const saved = localStorage.getItem(`game_${roomId}`);
+            if (!saved) {
+                alert('اتاقی با این کد وجود ندارد!');
+                return;
+            }
+            
+            currentRoom = roomId;
+            const gameState = JSON.parse(saved);
+            
+            if (Object.keys(gameState.players).length >= 2) {
+                alert('اتاق پر است!');
+                return;
+            }
+            
+            gameState.players[playerId] = { name: userData.name, ready: false };
+            localStorage.setItem(`game_${roomId}`, JSON.stringify(gameState));
+            
+            document.getElementById('onlineGameArea').style.display = 'block';
+            document.getElementById('waitingLoader').style.display = 'none';
+            startPolling(roomId);
+        }
+
+        function startPolling(roomId) {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(() => {
+                if (!currentRoom) return;
+                
+                const saved = localStorage.getItem(`game_${currentRoom}`);
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    
+                    if (state.choices && state.choices[playerId]) {
+                        const choice = state.choices[playerId];
+                        const elements_list = elements[state.mode || 'easy'];
+                        const element = elements_list.find(e => e.name === choice);
+                        if (element) {
+                            document.getElementById('onlinePlayerChoice').innerHTML = element.emoji;
+                        }
+                    }
+                    
+                    const opponentId = Object.keys(state.players || {}).find(id => id !== playerId);
+                    if (opponentId && state.choices && state.choices[opponentId]) {
+                        document.getElementById('waitingLoader').style.display = 'none';
+                        const choice = state.choices[opponentId];
+                        const elements_list = elements[state.mode || 'easy'];
+                        const element = elements_list.find(e => e.name === choice);
+                        if (element) {
+                            document.getElementById('onlineOpponentChoice').innerHTML = element.emoji;
+                            
+                            if (state.choices[playerId]) {
+                                const result = determineWinner(state.choices[playerId], choice, state.mode || 'easy');
+                                let resultText = '';
+                                if (result === 'برد') resultText = '🏆 شما برنده شدید!';
+                                else if (result === 'باخت') resultText = '💔 حریف برنده شد!';
+                                else resultText = '🤝 مساوی!';
+                                document.getElementById('onlineResult').innerHTML = resultText;
+                            }
+                        }
+                    } else {
+                        document.getElementById('onlineOpponentChoice').innerHTML = '❓';
+                        if (Object.keys(state.players).length < 2) {
+                            document.getElementById('waitingLoader').style.display = 'flex';
+                            document.getElementById('onlineResult').innerHTML = 'منتظر حریف...';
+                        }
+                    }
+                }
+            }, 1000);
+        }
+
+        function selectOnlineChoice(choice, emoji) {
+            if (!currentRoom) {
+                alert('لطفاً ابتدا به یک اتاق وارد شوید!');
+                return;
+            }
+            
+            document.getElementById('onlinePlayerChoice').innerHTML = emoji;
+            
+            const saved = localStorage.getItem(`game_${currentRoom}`);
+            if (saved) {
+                const state = JSON.parse(saved);
+                if (!state.choices) state.choices = {};
+                state.choices[playerId] = choice;
+                localStorage.setItem(`game_${currentRoom}`, JSON.stringify(state));
+            }
+            
+            if (onlineChoicesOpen) toggleOnlineChoices();
+        }
+
+        function leaveRoom() {
+            if (currentRoom) {
+                const saved = localStorage.getItem(`game_${currentRoom}`);
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    delete state.players[playerId];
+                    if (state.choices) delete state.choices[playerId];
+                    if (Object.keys(state.players).length === 0) {
+                        localStorage.removeItem(`game_${currentRoom}`);
+                    } else {
+                        localStorage.setItem(`game_${currentRoom}`, JSON.stringify(state));
+                    }
+                }
+            }
+            
+            if (pollInterval) clearInterval(pollInterval);
+            currentRoom = null;
+            document.getElementById('onlineGameArea').style.display = 'none';
+            document.getElementById('waitingLoader').style.display = 'none';
+        }
+
+        // ========== فروشگاه ==========
+        function renderShop() {
+            const list = document.getElementById('framesList');
+            list.innerHTML = frames.map(frame => {
+                const isOwned = userData.ownedFrames.includes(frame.id);
+                const canBuy = userData.coins >= frame.price && !isOwned;
+                return `
+                    <div class="frame-item">
+                        <div class="frame-preview">
+                            <div class="preview-frame ${frame.class}"></div>
+                            <div class="preview-avatar">${frame.id}</div>
+                        </div>
+                        <div class="frame-info">
+                            <div class="frame-name">${frame.name}</div>
+                            <div class="frame-price">💰 ${frame.price}</div>
+                        </div>
+                        ${isOwned ? 
+                            `<button class="buy-btn owned" onclick="selectFrame(${frame.id})" ${userData.currentFrame === frame.id ? 'disabled' : ''}>
+                                ${userData.currentFrame === frame.id ? 'انتخاب شده' : 'انتخاب'}
+                            </button>` : 
+                            `<button class="buy-btn" onclick="buyFrame(${frame.id})" ${!canBuy ? 'disabled' : ''}>
+                                ${canBuy ? 'خرید' : 'نداری'}
+                            </button>`
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function buyFrame(id) {
+            const frame = frames.find(f => f.id === id);
+            if (userData.coins >= frame.price) {
+                userData.coins -= frame.price;
+                userData.ownedFrames.push(id);
+                saveUserData();
+                renderShop();
+                updateAllDisplays();
+            }
+        }
+
+        function selectFrame(id) {
+            userData.currentFrame = id;
+            saveUserData();
+            updateAllDisplays();
+            renderShop();
+        }
+
+        // ========== مقداردهی اولیه ==========
+        window.onload = function() {
+            initTelegram();
+            
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            const knob = document.getElementById('themeKnob');
+            if (savedTheme === 'dark') {
+                knob.classList.add('dark');
+            } else {
+                knob.classList.remove('dark');
+            }
+            
+            // فعال کردن بخش بات
+            showSection('bot');
+            document.querySelector('#botSection .mode-option').classList.add('active');
+        };
+    </script>
+</body>
+</html>
