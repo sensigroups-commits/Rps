@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>آرنا | سنگ کاغذ قیچی پیشرفته</title>
+    <title>سنگ کاغذ قیچی</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
@@ -194,6 +194,7 @@
             box-shadow: 0 0 15px var(--gold-glow);
             position: relative;
             overflow: hidden;
+            z-index: 5;
         }
 
         .shop-btn::before {
@@ -242,6 +243,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid var(--border-color);
             transition: all 0.3s ease;
+            z-index: 5;
         }
 
         .nav-btn.active {
@@ -402,6 +404,7 @@
             text-align: center;
             position: relative;
             animation: float 3s ease infinite;
+            z-index: 2;
         }
 
         @keyframes float {
@@ -478,6 +481,7 @@
             overflow: hidden;
             box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
             transition: all 0.1s;
+            z-index: 10;
         }
 
         .choose-btn:active {
@@ -586,6 +590,84 @@
         .guide-wins { color: var(--success); }
         .guide-loses { color: var(--danger); }
 
+        /* ========== بخش آنلاین ========== */
+        .online-section {
+            text-align: center;
+        }
+
+        .room-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 20;
+        }
+
+        .room-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            min-width: 150px;
+            outline: none;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 25;
+        }
+
+        .room-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .online-btn {
+            flex: 0 0 auto;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            z-index: 25;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            transition: all 0.1s;
+        }
+
+        .online-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .online-btn.secondary {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .online-btn.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* باکس حریف در بخش آنلاین - مجزا از بات */
+        .online-opponent-box {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 20px 10px;
+            text-align: center;
+            position: relative;
+            animation: float 3s ease infinite;
+            z-index: 2;
+        }
+
         /* ========== لودینگ خرچنگی ========== */
         .waiting-loader {
             display: none;
@@ -595,6 +677,8 @@
             background: var(--card-bg);
             border-radius: 40px;
             margin: 20px 0;
+            position: relative;
+            z-index: 15;
         }
 
         .crab-loader {
@@ -991,7 +1075,7 @@
     <div class="container">
         <!-- هدر -->
         <header class="header">
-            <h1>⚡ ARENA</h1>
+            <h1>⚡ SENSI</h1>
             <div class="header-buttons">
                 <div class="theme-switch" onclick="toggleTheme()">
                     <div class="theme-slider">
@@ -1085,9 +1169,9 @@
             <div class="game-card">
                 <div class="online-section">
                     <div class="room-controls">
-                        <input type="text" id="roomId" class="room-input" placeholder="کد اتاق">
-                        <button class="choose-btn" onclick="createRoom()" style="margin: 0; padding: 12px;">ساخت اتاق</button>
-                        <button class="choose-btn" onclick="joinRoom()" style="margin: 0; padding: 12px; background: linear-gradient(135deg, #10b981, #059669);">ورود</button>
+                        <input type="text" id="roomId" class="room-input" placeholder="کد اتاق (مثلاً ABC123)">
+                        <button class="online-btn" onclick="createRoom()">ساخت</button>
+                        <button class="online-btn secondary" onclick="joinRoom()">ورود</button>
                     </div>
 
                     <div id="onlineGameArea" style="display: none;">
@@ -1098,7 +1182,7 @@
                                 <div class="choice-display" id="onlinePlayerChoice">❓</div>
                             </div>
                             <div class="vs-divider">VS</div>
-                            <div class="vs-box bot">
+                            <div class="online-opponent-box">
                                 <div class="score-badge" id="onlineOpponentScore">۰</div>
                                 <h3>حریف</h3>
                                 <div class="choice-display" id="onlineOpponentChoice">❓</div>
@@ -1142,7 +1226,7 @@
                             <div class="choices-grid" id="onlineChoicesGrid"></div>
                         </div>
 
-                        <button class="choose-btn" onclick="leaveRoom()" style="background: linear-gradient(135deg, #ef4444, #dc2626); margin-top: 10px;">خروج از اتاق</button>
+                        <button class="online-btn danger" onclick="leaveRoom()" style="width: 100%; margin-top: 10px;">خروج از اتاق</button>
                     </div>
                 </div>
             </div>
