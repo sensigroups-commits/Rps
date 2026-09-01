@@ -2,7 +2,7 @@
 // منطق بازی سنگ-کاغذ-قیچی
 // ============================================
 
-export const gameLogic = {
+export const gamelogic = {
     // انتخاب ربات (با حالت سخت)
     getBotChoice(mode = 'normal') {
         const choices = ['سنگ', 'کاغذ', 'قیچی'];
