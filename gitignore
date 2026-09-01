@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cloudflare
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.env
+.env.local
+.env.*.local
+
+# Wrangler
+wrangler.toml.local
+dist/
+build/
+*.local
+.dev.vars
+
+# Secrets
+*.secret
+*.key
+*.pem
+credentials.json
+
+# System files
+Thumbs.db
+Desktop.ini
