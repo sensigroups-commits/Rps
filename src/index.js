@@ -2,7 +2,7 @@
 // فایل اصلی ربات سنگ-کاغذ-قیچی
 // ============================================
 
-import { gameLogic } from './gamelogic.js';
+import { gamelogic } from './gamelogic.js';
 import { storage } from './storage.js';
 import { messages } from './messages.js';
 
