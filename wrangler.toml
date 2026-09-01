@@ -4,7 +4,7 @@ compatibility_date = "2024-12-18"
 
 [[kv_namespaces]]
 binding = "GAME_STATS"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "4a494562130246549c00eff601c72a48"
 preview_id = "YOUR_KV_NAMESPACE_PREVIEW_ID"
 
 [vars]
