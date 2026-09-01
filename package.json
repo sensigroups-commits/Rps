@@ -1,0 +1,27 @@
+{
+  "name": "rock-paper-scissors-telegram-bot",
+  "version": "1.0.0",
+  "description": "🤖 A complete Rock-Paper-Scissors Telegram bot for Cloudflare Workers with multiplayer, tournaments, and leaderboards",
+  "main": "src/index.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "kv:create": "wrangler kv:namespace create GAME_STATS",
+    "kv:create:preview": "wrangler kv:namespace create GAME_STATS --preview",
+    "secret:set": "wrangler secret put TELEGRAM_BOT_TOKEN"
+  },
+  "keywords": [
+    "telegram-bot",
+    "cloudflare-workers",
+    "rock-paper-scissors",
+    "game-bot",
+    "telegram-game",
+    "serverless"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
