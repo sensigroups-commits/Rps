@@ -1,12 +1,7 @@
-// ============================================
-// پیام‌های ربات
-// ============================================
-
 export const messages = {
-    // پیام خوش‌آمدگویی
     welcome(isGroup, username) {
         let msg = `🎮 ${username} عزیز، به ربات سنگ-کاغذ-قیچی خوش آمدی!\n\n`;
-        msg += '📋 دستورات:\n';
+        msg += '📋 **دستورات:**\n';
         msg += '/play - شروع بازی (حالت عادی)\n';
         msg += '/play hard - حالت سخت 🧠\n';
         msg += '/play best3 - حالت مسابقه‌ای (Best of 3)\n';
@@ -22,25 +17,15 @@ export const messages = {
         return msg;
     },
 
-    // شروع بازی
     startGame(modeName, username) {
         return `🎮 ${username} عزیز، **بازی جدید شروع شد!**\n📌 حالت: ${modeName}\n\n⬇️ دست خود را انتخاب کن:`;
     },
 
-    // نمایش نتیجه
     showResult(userChoice, botChoice, result, gameState, username) {
         const emojis = { 'سنگ': '🪨', 'کاغذ': '📄', 'قیچی': '✂️' };
-        const resultEmojis = {
-            'win': '🎉',
-            'lose': '😔',
-            'draw': '🤝'
-        };
-        const resultTexts = {
-            'win': `${username} شما برنده شدید!`,
-            'lose': `${username} ربات برنده شد!`,
-            'draw': `مساوی!`
-        };
-
+        const resultEmojis = { 'win': '🎉', 'lose': '😔', 'draw': '🤝' };
+        const resultTexts = { 'win': `${username} شما برنده شدید!`, 'lose': `${username} ربات برنده شد!`, 'draw': `مساوی!` };
+        
         let msg = `${emojis[userChoice]} شما: ${userChoice}\n`;
         msg += `${emojis[botChoice]} ربات: ${botChoice}\n\n`;
         msg += `${resultEmojis[result]} **${resultTexts[result]}**\n\n`;
@@ -49,51 +34,24 @@ export const messages = {
             msg += `📊 **امتیاز:** شما ${gameState.userWins} - ${gameState.botWins} ربات\n`;
             msg += `🔄 دور ${gameState.round} از ۳\n`;
         } else {
-            // پیام‌های طعنه‌آمیز متنوع
             const taunts = {
-                'win': [
-                    '🔥 عالی بود!',
-                    '💪 چه نمایشی!',
-                    '🎯 دقیقاً هدف‌ت رو زدی!',
-                    '⭐ ستاره‌ای!',
-                    '👏 آفرین!',
-                    '🎊 تبریک میگم!'
-                ],
-                'lose': [
-                    '😅 شانس بیار!',
-                    '🤔 دفعه بعد بهتر!',
-                    '📚 تمرین بیشتری نیاز داری!',
-                    '🎯 هدف رو اشتباه زدی!',
-                    '💪 قوی‌تر از این باش!',
-                    '😄 دفعه بعد حتماً!'
-                ],
-                'draw': [
-                    '🤝 مساوی، دفعه بعد!',
-                    '🔄 دوباره تلاش کن!',
-                    '🎯 نزدیک بود!',
-                    '⚖️ عدالت!',
-                    '😎 عالی بود!',
-                    '💪 باز هم!'
-                ]
+                'win': ['🔥 عالی بود!', '💪 چه نمایشی!', '🎯 دقیقاً هدف‌ت رو زدی!', '⭐ ستاره‌ای!', '👏 آفرین!', '🎊 تبریک میگم!'],
+                'lose': ['😅 شانس بیار!', '🤔 دفعه بعد بهتر!', '📚 تمرین بیشتری نیاز داری!', '🎯 هدف رو اشتباه زدی!', '💪 قوی‌تر از این باش!', '😄 دفعه بعد حتماً!'],
+                'draw': ['🤝 مساوی، دفعه بعد!', '🔄 دوباره تلاش کن!', '🎯 نزدیک بود!', '⚖️ عدالت!', '😎 عالی بود!', '💪 باز هم!']
             };
-
             const tauntList = taunts[result];
             if (tauntList) {
                 msg += `\n${tauntList[Math.floor(Math.random() * tauntList.length)]}`;
             }
         }
-
         return msg;
     },
 
-    // نمایش نتیجه ۲ نفره
     showTwoPlayerResult(player1, player2, choice1, choice2, result) {
         const emojis = { 'سنگ': '🪨', 'کاغذ': '📄', 'قیچی': '✂️' };
-
         let msg = `⚔️ **نتیجه بازی ۲ نفره:**\n\n`;
         msg += `👤 ${player1}: ${emojis[choice1]} ${choice1}\n`;
         msg += `👤 ${player2}: ${emojis[choice2]} ${choice2}\n\n`;
-
         if (result === 'win') {
             msg += `🎉 **${player1} برنده شد!**`;
         } else if (result === 'lose') {
@@ -101,11 +59,9 @@ export const messages = {
         } else {
             msg += `🤝 **مساوی!**`;
         }
-
         return msg;
     },
 
-    // نمایش آمار
     showStats(stats, username) {
         const total = stats.wins + stats.losses + stats.draws;
         const winRate = total > 0 ? Math.round((stats.wins / total) * 100) : 0;
@@ -121,7 +77,6 @@ export const messages = {
         msg += `⭐ بیشترین روند برد: ${stats.maxWinStreak}\n`;
         msg += `🏅 امتیاز کل: ${points}\n\n`;
         
-        // نمایش وضعیت بر اساس امتیاز
         if (points >= 50) {
             msg += '👑 شما یک قهرمان هستید!';
         } else if (points >= 30) {
@@ -131,14 +86,11 @@ export const messages = {
         } else {
             msg += '🚀 شروع کنید و پیشرفت کنید!';
         }
-
         return msg;
     },
 
-    // نمایش جدول رتبه‌بندی
     showLeaderboard(leaderboard) {
         let msg = '🏆 **جدول رتبه‌بندی گروه:**\n\n';
-
         const medals = ['🥇', '🥈', '🥉'];
 
         leaderboard.forEach((user, index) => {
@@ -150,14 +102,12 @@ export const messages = {
             msg += `${medal} **${user.username || `کاربر ${user.userId}`}**\n`;
             msg += `   🏆 ${user.wins} برد | 🏅 ${points} امتیاز | 🎯 ${winRate}%\n\n`;
         });
-
         return msg;
     },
 
-    // نمایش راهنما
     showHelp() {
-        let msg = '📖 راهنمای کامل ربات:\n\n';
-        msg += '🎮 دستورات:\n';
+        let msg = '📖 **راهنمای کامل ربات:**\n\n';
+        msg += '🎮 **دستورات:**\n';
         msg += '/start - شروع و خوش‌آمدگویی\n';
         msg += '/play - شروع بازی (حالت عادی)\n';
         msg += '/play hard - حالت سخت 🧠\n';
@@ -169,46 +119,42 @@ export const messages = {
         msg += '/tournament - شروع تورنمنت گروهی 🏆 (فقط گروه)\n';
         msg += '/help - نمایش این راهنما ❓\n\n';
 
-        msg += '🎯 امتیازدهی:\n';
+        msg += '🎯 **امتیازدهی:**\n';
         msg += 'برد = ۳ امتیاز 🏆\n';
         msg += 'مساوی = ۱ امتیاز 🤝\n';
         msg += 'باخت = ۰ امتیاز 💔\n\n';
 
-        msg += '⏰ تایمر:\n';
+        msg += '⏰ **تایمر:**\n';
         msg += 'شما ۳۰ ثانیه فرصت دارید تا دست خود را انتخاب کنید.\n\n';
 
-        msg += '🤖 حالت‌های بازی:\n';
+        msg += '🤖 **حالت‌های بازی:**\n';
         msg += '• عادی: ربات تصادفی انتخاب می‌کند\n';
         msg += '• سخت: ربات هوشمندتر انتخاب می‌کند 🧠\n';
         msg += '• مسابقه‌ای: بهترین از ۳ دور 🏆\n';
         msg += '• ۲ نفره: دو کاربر در گروه با هم بازی می‌کنند 👥\n\n';
 
-        msg += '🏆 تورنمنت گروهی:\n';
+        msg += '🏆 **تورنمنت گروهی:**\n';
         msg += '• حداقل ۲ نفر برای شروع نیاز است\n';
         msg += '• حداکثر ۸ نفر می‌توانند شرکت کنند\n';
         msg += '• قرعه‌کشی تصادفی برای مسابقات\n';
         msg += '• برنده نهایی قهرمان تورنمنت می‌شود\n\n';
 
-        msg += '💡 نکات:\n';
+        msg += '💡 **نکات:**\n';
         msg += '• می‌توانید از دکمه‌های شیشه‌ای استفاده کنید\n';
         msg += '• آمار شما به‌صورت دائمی ذخیره می‌شود\n';
         msg += '• برای ریست آمار از /reset استفاده کنید';
-
         return msg;
     },
 
-    // نمایش براکت تورنمنت
     showTournamentBracket(rounds, players) {
         let msg = '🏆 **براکت تورنمنت:**\n\n';
         msg += `👥 تعداد شرکت‌کنندگان: ${players.length}\n\n`;
-        
         msg += '📋 **مسابقات دور اول:**\n';
         rounds.forEach((match, index) => {
             const player1 = match[0];
             const player2 = match[1] || '🆓 Bye';
             msg += `⚔️ مسابقه ${index + 1}: ${player1} VS ${player2}\n`;
         });
-        
         return msg;
     }
 };
