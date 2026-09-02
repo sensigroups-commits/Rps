@@ -803,6 +803,7 @@ export default {
     async fetch(request, env) {
         const url = new URL(request.url);
 
+        // تنظیم Webhook
         if (url.pathname === '/setwebhook') {
             const webhookUrl = `https://${url.hostname}/webhook`;
             try {
@@ -821,6 +822,7 @@ export default {
             }
         }
 
+        // پردازش Webhook
         if (url.pathname === '/webhook' && request.method === 'POST') {
             try {
                 const update = await request.json();
