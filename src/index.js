@@ -15,6 +15,7 @@ class RockPaperScissorsBot {
         this.tournaments = new Map();
         this.userTimers = new Map();
         this.tournamentChoices = new Map();
+        this.twoPlayerGames = new Map(); // برای بازی ۲ نفره
     }
 
     async handleUpdate(update, env) {
@@ -73,7 +74,7 @@ class RockPaperScissorsBot {
                 break;
             case '/play2p':
                 if (isGroup) {
-                    await this.playCommand(chatId, userId, '2p', username);
+                    await this.startTwoPlayerGame(chatId, userId, username);
                 } else {
                     await this.sendMessage(chatId, '❌ بازی ۲ نفره فقط در گروه‌ها قابل اجراست!');
                 }
@@ -105,27 +106,217 @@ class RockPaperScissorsBot {
     async startCommand(chatId, userId, isGroup, username) {
         await this.storage.registerUser(userId, chatId, username);
         const welcomeMsg = messages.welcome(isGroup, username);
+        
+        // دکمه‌های شیشه‌ای - همیشه نمایش داده میشن
+        const keyboard = {
+            inline_keyboard: [
+                [
+                    { text: '🪨 سنگ', callback_data: 'rock' },
+                    { text: '📄 کاغذ', callback_data: 'paper' },
+                    { text: '✂️ قیچی', callback_data: 'scissors' }
+                ],
+                [
+                    { text: '🎮 شروع بازی', callback_data: 'start_game' },
+                    { text: '📊 آمار من', callback_data: 'my_stats' },
+                    { text: '🏆 جدول امتیازات', callback_data: 'show_leaderboard' }
+                ],
+                [
+                    { text: '❓ راهنما', callback_data: 'show_help' }
+                ]
+            ]
+        };
+
         await this.sendMessage(chatId, welcomeMsg, {
+            reply_markup: keyboard
+        });
+    }
+
+    // ============================================
+    // بازی ۲ نفره - شروع
+    // ============================================
+    async startTwoPlayerGame(chatId, userId, username) {
+        // بررسی اینکه آیا بازی ۲ نفره در این گروه فعال است
+        if (this.twoPlayerGames.has(chatId)) {
+            const game = this.twoPlayerGames.get(chatId);
+            if (game.status === 'waiting_for_second') {
+                // نفر دوم وارد میشود
+                if (game.player1 === userId) {
+                    await this.sendMessage(chatId, '❌ شما قبلاً بازی رو شروع کردید! منتظر نفر دوم باشید.');
+                    return;
+                }
+                
+                // نفر دوم ثبت میشود
+                game.player2 = userId;
+                game.username2 = username;
+                game.status = 'playing';
+                this.twoPlayerGames.set(chatId, game);
+                
+                // اعلام به هر دو نفر
+                await this.sendMessage(chatId, 
+                    `🎮 **بازی ۲ نفره شروع شد!**\n\n` +
+                    `👤 ${game.username1} VS ${game.username2}\n\n` +
+                    `هر دو بازیکن دست خود را انتخاب کنند.\n` +
+                    `⏰ شما ۳۰ ثانیه فرصت دارید.`,
+                    {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [
+                                    { text: '🪨 سنگ', callback_data: '2p_rock' },
+                                    { text: '📄 کاغذ', callback_data: '2p_paper' },
+                                    { text: '✂️ قیچی', callback_data: '2p_scissors' }
+                                ]
+                            ]
+                        }
+                    }
+                );
+                
+                // شروع تایمر برای هر دو
+                this.setTwoPlayerTimer(chatId, game.player1);
+                this.setTwoPlayerTimer(chatId, game.player2);
+                return;
+            }
+        }
+        
+        // شروع بازی جدید - نفر اول
+        const game = {
+            player1: userId,
+            player2: null,
+            username1: username,
+            username2: null,
+            choice1: null,
+            choice2: null,
+            status: 'waiting_for_second', // waiting_for_second | playing | finished
+            chatId: chatId
+        };
+        
+        this.twoPlayerGames.set(chatId, game);
+        
+        // پیام خصوصی به نفر اول (انتخابش لو نره)
+        await this.sendMessage(chatId, 
+            `🎮 ${username} عزیز، بازی ۲ نفره شروع شد!\n\n` +
+            `⏳ در حال انتظار برای نفر دوم...\n` +
+            `به دوستانت بگو دستور /play2p رو بزنن تا به بازی بپیوندن.`
+        );
+    }
+
+    // ============================================
+    // پردازش انتخاب در بازی ۲ نفره
+    // ============================================
+    async handleTwoPlayerChoice(chatId, userId, choice, username) {
+        const game = this.twoPlayerGames.get(chatId);
+        if (!game) {
+            await this.sendMessage(chatId, '❌ هیچ بازی ۲ نفره‌ای فعال نیست! با /play2p شروع کن.');
+            return;
+        }
+
+        if (game.status === 'finished') {
+            await this.sendMessage(chatId, '❌ این بازی به پایان رسیده! با /play2p دوباره شروع کن.');
+            return;
+        }
+
+        // تشخیص بازیکن
+        if (userId === game.player1) {
+            if (game.choice1) {
+                await this.sendMessage(chatId, '⏳ شما قبلاً انتخاب کردید! منتظر نفر دوم باشید.');
+                return;
+            }
+            game.choice1 = choice;
+            await this.sendMessage(chatId, '✅ انتخاب شما ثبت شد! منتظر انتخاب نفر دوم باشید.');
+        } else if (userId === game.player2) {
+            if (game.choice2) {
+                await this.sendMessage(chatId, '⏳ شما قبلاً انتخاب کردید! منتظر نفر اول باشید.');
+                return;
+            }
+            game.choice2 = choice;
+            await this.sendMessage(chatId, '✅ انتخاب شما ثبت شد! منتظر انتخاب نفر اول باشید.');
+        } else {
+            await this.sendMessage(chatId, '❌ شما در این بازی شرکت ندارید!');
+            return;
+        }
+
+        this.twoPlayerGames.set(chatId, game);
+
+        // بررسی اینکه هر دو انتخاب کردند
+        if (game.choice1 && game.choice2) {
+            // نمایش نتیجه بدون لو دادن انتخاب‌ها
+            await this.showTwoPlayerResult(chatId, game);
+        }
+    }
+
+    // ============================================
+    // نمایش نتیجه بازی ۲ نفره (بدون لو دادن انتخاب‌ها)
+    // ============================================
+    async showTwoPlayerResult(chatId, game) {
+        const result = gamelogic.determineWinner(game.choice1, game.choice2);
+        
+        let msg = '⚔️ **نتیجه بازی ۲ نفره:**\n\n';
+        
+        if (result === 'win') {
+            msg += `🎉 **${game.username1} برنده شد!**`;
+            await this.storage.updateStats(game.player1, chatId, 'win', game.username1);
+            await this.storage.updateStats(game.player2, chatId, 'lose', game.username2);
+        } else if (result === 'lose') {
+            msg += `🎉 **${game.username2} برنده شد!**`;
+            await this.storage.updateStats(game.player1, chatId, 'lose', game.username1);
+            await this.storage.updateStats(game.player2, chatId, 'win', game.username2);
+        } else {
+            msg += `🤝 **مساوی!**`;
+            await this.storage.updateStats(game.player1, chatId, 'draw', game.username1);
+            await this.storage.updateStats(game.player2, chatId, 'draw', game.username2);
+        }
+        
+        game.status = 'finished';
+        this.twoPlayerGames.set(chatId, game);
+        
+        await this.sendMessage(chatId, msg, {
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { text: '🪨 سنگ', callback_data: 'rock' },
-                        { text: '📄 کاغذ', callback_data: 'paper' },
-                        { text: '✂️ قیچی', callback_data: 'scissors' }
-                    ],
-                    [
-                        { text: '🎮 شروع بازی', callback_data: 'start_game' },
-                        { text: '📊 آمار من', callback_data: 'my_stats' },
-                        { text: '🏆 جدول امتیازات', callback_data: 'show_leaderboard' }
-                    ],
-                    [
-                        { text: '❓ راهنما', callback_data: 'show_help' }
+                        { text: '🔄 بازی جدید', callback_data: 'new_2p_game' },
+                        { text: '📊 آمار من', callback_data: 'my_stats' }
                     ]
                 ]
             }
         });
+        
+        // پاک کردن تایمرها
+        this.clearTimer(game.player1);
+        this.clearTimer(game.player2);
     }
 
+    // ============================================
+    // تایمر بازی ۲ نفره
+    // ============================================
+    setTwoPlayerTimer(chatId, userId) {
+        const timer = setTimeout(async () => {
+            const game = this.twoPlayerGames.get(chatId);
+            if (!game || game.status === 'finished') return;
+            
+            // اگر کاربر انتخاب نکرده، به‌صورت تصادفی انتخاب کن
+            let choice = ['سنگ', 'کاغذ', 'قیچی'][Math.floor(Math.random() * 3)];
+            
+            if (userId === game.player1 && !game.choice1) {
+                game.choice1 = choice;
+                await this.sendMessage(chatId, `⏰ زمان ${game.username1} تموم شد! انتخاب تصادفی انجام شد.`);
+            } else if (userId === game.player2 && !game.choice2) {
+                game.choice2 = choice;
+                await this.sendMessage(chatId, `⏰ زمان ${game.username2} تموم شد! انتخاب تصادفی انجام شد.`);
+            }
+            
+            this.twoPlayerGames.set(chatId, game);
+            
+            // بررسی اینکه هر دو انتخاب کردند
+            if (game.choice1 && game.choice2) {
+                await this.showTwoPlayerResult(chatId, game);
+            }
+        }, 30000);
+        
+        this.userTimers.set(`twoplayer_${userId}`, { timer, expired: false });
+    }
+
+    // ============================================
+    // بازی عادی با ربات
+    // ============================================
     async playCommand(chatId, userId, mode, username) {
         this.clearTimer(userId);
 
@@ -138,9 +329,6 @@ class RockPaperScissorsBot {
         } else if (mode === 'best3' || mode === 'best_of_3') {
             gameMode = 'best_of_3';
             modeName = 'مسابقه‌ای (Best of 3)';
-        } else if (mode === '2p' || mode === 'two_player') {
-            gameMode = 'two_player';
-            modeName = '۲ نفره 👥';
         }
 
         this.gameStates.set(userId, {
@@ -181,7 +369,7 @@ class RockPaperScissorsBot {
         const gameState = this.gameStates.get(userId);
         
         if (!gameState) {
-            await this.sendMessage(chatId, '❌ ابتدا با دستور /play یا /playhard یا /playbest3 یا /play2p بازی رو شروع کن!');
+            await this.sendMessage(chatId, '❌ ابتدا با دستور /play یا /playhard یا /playbest3 بازی رو شروع کن!');
             return;
         }
 
@@ -200,11 +388,6 @@ class RockPaperScissorsBot {
         const validChoices = ['سنگ', 'کاغذ', 'قیچی'];
         if (!validChoices.includes(choice)) {
             await this.sendMessage(chatId, '❌ لطفاً یکی از گزینه‌های سنگ، کاغذ یا قیچی رو انتخاب کن.');
-            return;
-        }
-
-        if (gameState.mode === 'two_player') {
-            await this.handleTwoPlayerMode(chatId, userId, choice, username);
             return;
         }
 
@@ -255,80 +438,6 @@ class RockPaperScissorsBot {
 
         this.clearTimer(userId);
         this.setTimer(chatId, userId);
-    }
-
-    async handleTwoPlayerMode(chatId, userId, choice, username) {
-        const gameState = this.gameStates.get(userId);
-        
-        if (gameState.userChoice) {
-            await this.sendMessage(chatId, '⏳ شما قبلاً انتخاب کردید! منتظر نفر دوم باشید.');
-            return;
-        }
-
-        gameState.userChoice = choice;
-        gameState.round++;
-        this.gameStates.set(userId, gameState);
-
-        let opponentId = null;
-        for (const [id, state] of this.gameStates) {
-            if (id !== userId && state.chatId === chatId && state.mode === 'two_player' && !state.userChoice) {
-                opponentId = id;
-                break;
-            }
-        }
-
-        if (!opponentId) {
-            await this.sendMessage(chatId, `✅ انتخاب شما (${choice}) ثبت شد!\n⏳ در حال انتظار برای نفر دوم...`);
-            return;
-        }
-
-        const opponentState = this.gameStates.get(opponentId);
-        if (!opponentState || !opponentState.userChoice) {
-            await this.sendMessage(chatId, '❌ خطا در دریافت انتخاب نفر دوم!');
-            return;
-        }
-
-        const user1Choice = gameState.userChoice;
-        const user2Choice = opponentState.userChoice;
-
-        const result = gamelogic.determineWinner(user1Choice, user2Choice);
-
-        const resultMsg = messages.showTwoPlayerResult(
-            gameState.username || `کاربر ${userId}`,
-            opponentState.username || `کاربر ${opponentId}`,
-            user1Choice,
-            user2Choice,
-            result
-        );
-        await this.sendMessage(chatId, resultMsg, {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: '🔄 بازی جدید', callback_data: 'new_game' },
-                        { text: '📊 آمار من', callback_data: 'my_stats' }
-                    ]
-                ]
-            }
-        });
-
-        if (result === 'win') {
-            await this.storage.updateStats(userId, chatId, 'win', gameState.username);
-            await this.storage.updateStats(opponentId, chatId, 'lose', opponentState.username);
-        } else if (result === 'lose') {
-            await this.storage.updateStats(userId, chatId, 'lose', gameState.username);
-            await this.storage.updateStats(opponentId, chatId, 'win', opponentState.username);
-        } else {
-            await this.storage.updateStats(userId, chatId, 'draw', gameState.username);
-            await this.storage.updateStats(opponentId, chatId, 'draw', opponentState.username);
-        }
-
-        gameState.isActive = false;
-        opponentState.isActive = false;
-        this.gameStates.set(userId, gameState);
-        this.gameStates.set(opponentId, opponentState);
-        
-        this.clearTimer(userId);
-        this.clearTimer(opponentId);
     }
 
     async statsCommand(chatId, userId, username) {
@@ -505,7 +614,7 @@ class RockPaperScissorsBot {
         choices[userId] = choice;
         this.tournamentChoices.set(chatId, choices);
 
-        await this.sendMessage(chatId, `✅ انتخاب شما (${choice}) ثبت شد!`);
+        await this.sendMessage(chatId, `✅ انتخاب شما ثبت شد!`);
 
         const allPlayers = round.flat().filter(p => p !== null);
         const allSelected = allPlayers.every(p => choices[p] !== undefined);
@@ -569,10 +678,9 @@ class RockPaperScissorsBot {
             if (result.player2 === null) {
                 msg += `🎉 ${result.player1} به دور بعد راه یافت! (Bye)\n`;
             } else if (result.winner === null) {
-                msg += `🤝 ${result.player1} (${result.choice1}) VS ${result.player2} (${result.choice2}) -> مساوی!\n`;
+                msg += `🤝 ${result.player1} VS ${result.player2} -> مساوی!\n`;
             } else {
                 msg += `🎉 ${result.winner} برنده شد!\n`;
-                msg += `   ${result.player1} (${result.choice1}) VS ${result.player2} (${result.choice2})\n`;
             }
         }
 
@@ -649,7 +757,7 @@ class RockPaperScissorsBot {
                 const randomChoice = ['سنگ', 'کاغذ', 'قیچی'][Math.floor(Math.random() * 3)];
                 choices[userId] = randomChoice;
                 this.tournamentChoices.set(chatId, choices);
-                await this.sendMessage(chatId, `⏰ زمان ${userId} تموم شد! انتخاب تصادفی: ${randomChoice}`);
+                await this.sendMessage(chatId, `⏰ زمان ${userId} تموم شد! انتخاب تصادفی انجام شد.`);
                 
                 const tournament = this.tournaments.get(chatId);
                 if (tournament) {
@@ -726,6 +834,17 @@ class RockPaperScissorsBot {
                 await this.handleGameChoice(chatId, userId, choice, query.message, username);
                 break;
 
+            case '2p_rock':
+            case '2p_paper':
+            case '2p_scissors':
+                const choice2p = { 
+                    '2p_rock': 'سنگ', 
+                    '2p_paper': 'کاغذ', 
+                    '2p_scissors': 'قیچی' 
+                }[data];
+                await this.handleTwoPlayerChoice(chatId, userId, choice2p, username);
+                break;
+
             case 'tournament_rock':
             case 'tournament_paper':
             case 'tournament_scissors':
@@ -739,6 +858,10 @@ class RockPaperScissorsBot {
 
             case 'start_game':
                 await this.playCommand(chatId, userId, 'normal', username);
+                break;
+
+            case 'new_2p_game':
+                await this.startTwoPlayerGame(chatId, userId, username);
                 break;
 
             case 'my_stats':
