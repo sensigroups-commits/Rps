@@ -3,10 +3,10 @@ export const messages = {
         let msg = `🎮 ${username} عزیز، به ربات سنگ-کاغذ-قیچی خوش آمدی!\n\n`;
         msg += '📋 **دستورات:**\n';
         msg += '/play - شروع بازی (حالت عادی)\n';
-        msg += '/play hard - حالت سخت 🧠\n';
-        msg += '/play best3 - حالت مسابقه‌ای (Best of 3)\n';
+        msg += '/playhard - حالت سخت 🧠\n';
+        msg += '/playbest3 - حالت مسابقه‌ای (Best of 3)\n';
         if (isGroup) {
-            msg += '/play 2p - حالت ۲ نفره 👥\n';
+            msg += '/play2p - حالت ۲ نفره 👥\n';
             msg += '/tournament - شروع تورنمنت گروهی 🏆\n';
         }
         msg += '/stats - نمایش آمار من 📊\n';
@@ -110,9 +110,9 @@ export const messages = {
         msg += '🎮 **دستورات:**\n';
         msg += '/start - شروع و خوش‌آمدگویی\n';
         msg += '/play - شروع بازی (حالت عادی)\n';
-        msg += '/play hard - حالت سخت 🧠\n';
-        msg += '/play best3 - حالت مسابقه‌ای (Best of 3)\n';
-        msg += '/play 2p - حالت ۲ نفره 👥 (فقط گروه)\n';
+        msg += '/playhard - حالت سخت 🧠\n';
+        msg += '/playbest3 - حالت مسابقه‌ای (Best of 3)\n';
+        msg += '/play2p - حالت ۲ نفره 👥 (فقط گروه)\n';
         msg += '/stats - نمایش آمار شما 📊\n';
         msg += '/leaderboard - جدول رتبه‌بندی گروه 🏅\n';
         msg += '/reset - ریست کردن آمار شما 🔄\n';
