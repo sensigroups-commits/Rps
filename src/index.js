@@ -16,7 +16,7 @@ class RockPaperScissorsBot {
         this.userTimers = new Map();
         this.tournamentChoices = new Map();
         this.twoPlayerGames = new Map();
-        this.messageTimers = new Map(); // برای حذف خودکار پیام‌ها
+        this.messageTimers = new Map();
     }
 
     async handleUpdate(update, env) {
@@ -41,11 +41,6 @@ class RockPaperScissorsBot {
                 const text = msg.text?.trim() || '';
                 const isGroup = msg.chat.type !== 'private';
                 const username = msg.from.username || msg.from.first_name || `کاربر ${userId}`;
-
-                // ====== چک کردن پیام‌های گروه برای حذف خودکار ======
-                if (isGroup && msg.message_id) {
-                    // پیام‌های ربات رو ذخیره کن برای حذف بعدی
-                }
 
                 if (text.startsWith('/')) {
                     await this.handleCommand(chatId, userId, text, isGroup, msg, username);
@@ -173,7 +168,6 @@ class RockPaperScissorsBot {
     // کنسل کردن بازی
     // ============================================
     async cancelGame(chatId, userId) {
-        // حذف بازی عادی
         if (this.gameStates.has(userId)) {
             this.gameStates.delete(userId);
             this.clearTimer(userId);
@@ -184,7 +178,6 @@ class RockPaperScissorsBot {
             return;
         }
 
-        // حذف بازی ۲ نفره
         if (this.twoPlayerGames.has(chatId)) {
             const game = this.twoPlayerGames.get(chatId);
             if (game.player1 === userId || game.player2 === userId) {
@@ -458,7 +451,7 @@ class RockPaperScissorsBot {
     }
 
     // ============================================
-    // بازی عادی با ربات
+    // بازی عادی با ربات (اصلاح‌شده برای عدم پاسخ به چت معمولی)
     // ============================================
     async playCommand(chatId, userId, mode, username) {
         this.clearTimer(userId);
@@ -511,22 +504,26 @@ class RockPaperScissorsBot {
         this.setTimer(chatId, userId);
     }
 
-    async handleGameChoice(chatId, userId, choice, msg, username) {
+    // ============================================
+    // پردازش انتخاب کاربر (اصلاح‌شده برای عدم پاسخ به چت معمولی)
+    // ============================================
+    async handleGameChoice(chatId, userId, text, msg, username) {
+        // ====== فقط پیام‌های متنی که انتخاب معتبر هستند رو پردازش کن ======
+        const validChoices = ['سنگ', 'کاغذ', 'قیچی'];
+        
+        // اگه پیام یکی از انتخاب‌های معتبر نباشه، نادیده بگیر
+        if (!validChoices.includes(text)) {
+            return; // هیچ کاری نکن، پیام رو نادیده بگیر
+        }
+
         const gameState = this.gameStates.get(userId);
         
+        // اگه بازی فعال نیست، نادیده بگیر
         if (!gameState) {
-            const sentMsg = await this.sendMessage(chatId, '❌ ابتدا با دستور /play یا /playhard یا /playbest3 بازی رو شروع کن!');
-            if (sentMsg && sentMsg.result) {
-                this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 4000);
-            }
             return;
         }
 
         if (!gameState.isActive) {
-            const sentMsg = await this.sendMessage(chatId, '❌ این بازی قبلاً تمام شده! با /play دوباره شروع کن.');
-            if (sentMsg && sentMsg.result) {
-                this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 4000);
-            }
             return;
         }
 
@@ -540,14 +537,7 @@ class RockPaperScissorsBot {
             return;
         }
 
-        const validChoices = ['سنگ', 'کاغذ', 'قیچی'];
-        if (!validChoices.includes(choice)) {
-            const sentMsg = await this.sendMessage(chatId, '❌ لطفاً یکی از گزینه‌های سنگ، کاغذ یا قیچی رو انتخاب کن.');
-            if (sentMsg && sentMsg.result) {
-                this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 4000);
-            }
-            return;
-        }
+        const choice = text;
 
         gameState.userChoice = choice;
         gameState.round++;
