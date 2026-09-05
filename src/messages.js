@@ -47,11 +47,8 @@ export const messages = {
         return msg;
     },
 
-    showTwoPlayerResult(player1, player2, choice1, choice2, result) {
-        const emojis = { 'سنگ': '🪨', 'کاغذ': '📄', 'قیچی': '✂️' };
+    showTwoPlayerResult(player1, player2, result) {
         let msg = `⚔️ **نتیجه بازی ۲ نفره:**\n\n`;
-        msg += `👤 ${player1}: ${emojis[choice1]} ${choice1}\n`;
-        msg += `👤 ${player2}: ${emojis[choice2]} ${choice2}\n\n`;
         if (result === 'win') {
             msg += `🎉 **${player1} برنده شد!**`;
         } else if (result === 'lose') {
