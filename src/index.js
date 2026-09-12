@@ -17,6 +17,9 @@ class RockPaperScissorsBot {
         this.tournamentChoices = new Map();
         this.twoPlayerGames = new Map();
         this.messageTimers = new Map();
+        // ========== اینجا یوزرنیم رباتت رو بذار (بدون @) ==========
+        this.botUsername = 'roockpaperscissorss_bot';
+        // ============================================================
     }
 
     async handleUpdate(update, env) {
@@ -98,14 +101,30 @@ class RockPaperScissorsBot {
     }
 
     // ============================================
-    // مدیریت دستورات (پشتیبانی از @)
+    // مدیریت دستورات (فقط دستورات معتبر ربات خودمون)
     // ============================================
     async handleCommand(chatId, userId, command, isGroup, msg, username) {
         const args = command.split(' ');
         let cmd = args[0].toLowerCase();
         
+        // ====== چک کن اگه دستور با @ به ربات دیگه‌ای اشاره داره، نادیده بگیر ======
         if (cmd.includes('@')) {
-            cmd = cmd.split('@')[0];
+            const [cmdPart, mentionPart] = cmd.split('@');
+            if (mentionPart.toLowerCase() !== this.botUsername.toLowerCase()) {
+                return; // این دستور مربوط به ربات دیگه‌ایه
+            }
+            cmd = cmdPart;
+        }
+
+        // ====== لیست دستورات معتبر ربات ======
+        const validCommands = [
+            '/start', '/play', '/playhard', '/playbest3', '/play2p',
+            '/stats', '/leaderboard', '/reset', '/help', '/tournament', '/cancel'
+        ];
+
+        // ====== اگه دستور معتبر نیست، نادیده بگیر ======
+        if (!validCommands.includes(cmd)) {
+            return;
         }
 
         switch (cmd) {
@@ -156,11 +175,6 @@ class RockPaperScissorsBot {
             case '/cancel':
                 await this.cancelGame(chatId, userId);
                 break;
-            default:
-                const sentMsg = await this.sendMessage(chatId, '❌ دستور ناشناخته. از /help استفاده کن.');
-                if (sentMsg && sentMsg.result) {
-                    this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 4000);
-                }
         }
     }
 
@@ -199,7 +213,7 @@ class RockPaperScissorsBot {
     }
 
     // ============================================
-    // حذف خودکار پیام‌ها بعد از ۴۰ ثانیه
+    // حذف خودکار پیام‌ها
     // ============================================
     scheduleMessageDeletion(chatId, messageId, delay = 40000) {
         const timer = setTimeout(async () => {
@@ -451,7 +465,7 @@ class RockPaperScissorsBot {
     }
 
     // ============================================
-    // بازی عادی با ربات (اصلاح‌شده برای عدم پاسخ به چت معمولی)
+    // بازی عادی با ربات
     // ============================================
     async playCommand(chatId, userId, mode, username) {
         this.clearTimer(userId);
@@ -505,20 +519,17 @@ class RockPaperScissorsBot {
     }
 
     // ============================================
-    // پردازش انتخاب کاربر (اصلاح‌شده برای عدم پاسخ به چت معمولی)
+    // پردازش انتخاب کاربر (فقط کلمات معتبر)
     // ============================================
     async handleGameChoice(chatId, userId, text, msg, username) {
-        // ====== فقط پیام‌های متنی که انتخاب معتبر هستند رو پردازش کن ======
         const validChoices = ['سنگ', 'کاغذ', 'قیچی'];
         
-        // اگه پیام یکی از انتخاب‌های معتبر نباشه، نادیده بگیر
         if (!validChoices.includes(text)) {
-            return; // هیچ کاری نکن، پیام رو نادیده بگیر
+            return;
         }
 
         const gameState = this.gameStates.get(userId);
         
-        // اگه بازی فعال نیست، نادیده بگیر
         if (!gameState) {
             return;
         }
