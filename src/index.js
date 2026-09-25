@@ -45,6 +45,73 @@ class RockPaperScissorsBot {
                 const isGroup = msg.chat.type !== 'private';
                 const username = msg.from.username || msg.from.first_name || `کاربر ${userId}`;
 
+                // ====== دریافت File ID از عکس ======
+                if (msg.photo) {
+                    const fileId = msg.photo[msg.photo.length - 1].file_id;
+                    const sentMsg = await this.sendMessage(chatId, 
+                        `📁 File ID عکس شما:\n\n` +
+                        `<code>${fileId}</code>\n\n` +
+                        `⬆️ روی کد بالا بزن تا کپی بشه.`
+                    );
+                    if (sentMsg && sentMsg.result && isGroup) {
+                        this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 60000);
+                    }
+                    return new Response('OK', { status: 200 });
+                }
+
+                // ====== دریافت File ID از ویدیو ======
+                if (msg.video) {
+                    const fileId = msg.video.file_id;
+                    const sentMsg = await this.sendMessage(chatId, 
+                        `📁 File ID ویدیو شما:\n\n` +
+                        `<code>${fileId}</code>`
+                    );
+                    if (sentMsg && sentMsg.result && isGroup) {
+                        this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 60000);
+                    }
+                    return new Response('OK', { status: 200 });
+                }
+
+                // ====== دریافت File ID از فایل ======
+                if (msg.document) {
+                    const fileId = msg.document.file_id;
+                    const sentMsg = await this.sendMessage(chatId, 
+                        `📁 File ID فایل شما:\n\n` +
+                        `<code>${fileId}</code>`
+                    );
+                    if (sentMsg && sentMsg.result && isGroup) {
+                        this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 60000);
+                    }
+                    return new Response('OK', { status: 200 });
+                }
+
+                // ====== دریافت File ID از صدا ======
+                if (msg.audio) {
+                    const fileId = msg.audio.file_id;
+                    const sentMsg = await this.sendMessage(chatId, 
+                        `📁 File ID صدا شما:\n\n` +
+                        `<code>${fileId}</code>`
+                    );
+                    if (sentMsg && sentMsg.result && isGroup) {
+                        this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 60000);
+                    }
+                    return new Response('OK', { status: 200 });
+                }
+
+                // ====== دریافت File ID از استیکر ======
+                if (msg.sticker) {
+                    const fileId = msg.sticker.file_id;
+                    const sentMsg = await this.sendMessage(chatId, 
+                        `📁 File ID استیکر شما:\n\n` +
+                        `<code>${fileId}</code>`
+                    );
+                    if (sentMsg && sentMsg.result && isGroup) {
+                        this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 60000);
+                    }
+                    return new Response('OK', { status: 200 });
+                }
+
+                // ====== پردازش دستورات و بازی ======
                 if (text.startsWith('/')) {
                     await this.handleCommand(chatId, userId, text, isGroup, msg, username);
                 } else {
@@ -451,7 +518,6 @@ class RockPaperScissorsBot {
             return;
         }
 
-        // فقط بازی ۲ نفره رو پردازش کن
         const game = this.twoPlayerGames.get(chatId);
         if (game && (game.player1 === userId || game.player2 === userId)) {
             await this.handleTwoPlayerChoice(chatId, userId, text, username);
