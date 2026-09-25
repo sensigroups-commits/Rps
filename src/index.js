@@ -18,7 +18,7 @@ class RockPaperScissorsBot {
         this.twoPlayerGames = new Map();
         this.messageTimers = new Map();
         // ========== اینجا یوزرنیم رباتت رو بذار (بدون @) ==========
-        this.botUsername = 'roockpaperscissorss_bot';
+        this.botUsername = 'rookpaperscissors_bot';
         // ============================================================
     }
 
@@ -73,10 +73,9 @@ class RockPaperScissorsBot {
     // پیام خوش‌آمدگویی به گروه
     // ============================================
     async sendWelcomeToGroup(chatId) {
-        const msg = `🎉 **به ربات سنگ-کاغذ-قیچی خوش آمدید!**\n\n` +
+        const msg = `🎉 به ربات سنگ-کاغذ-قیچی خوش آمدید!\n\n` +
                     `این ربات یک بازی گروهی جذاب برای سرگرمی شماست.\n\n` +
-                    `📋 **دستورات سریع:**\n` +
-                    `/play - بازی عادی\n` +
+                    `📋 دستورات سریع:\n` +
                     `/play2p - بازی ۲ نفره\n` +
                     `/tournament - تورنمنت گروهی\n\n` +
                     `برای مشاهده همه دستورات از /help استفاده کنید.`;
@@ -85,8 +84,8 @@ class RockPaperScissorsBot {
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { text: '🎮 شروع بازی', callback_data: 'start_game' },
-                        { text: '👥 بازی ۲ نفره', callback_data: 'start_2p_game' }
+                        { text: '👥 بازی ۲ نفره', callback_data: 'start_2p_game' },
+                        { text: '🏆 تورنمنت', callback_data: 'start_tournament' }
                     ],
                     [
                         { text: '📊 آمار من', callback_data: 'my_stats' },
@@ -101,7 +100,7 @@ class RockPaperScissorsBot {
     }
 
     // ============================================
-    // مدیریت دستورات (فقط دستورات معتبر ربات خودمون)
+    // مدیریت دستورات
     // ============================================
     async handleCommand(chatId, userId, command, isGroup, msg, username) {
         const args = command.split(' ');
@@ -111,18 +110,17 @@ class RockPaperScissorsBot {
         if (cmd.includes('@')) {
             const [cmdPart, mentionPart] = cmd.split('@');
             if (mentionPart.toLowerCase() !== this.botUsername.toLowerCase()) {
-                return; // این دستور مربوط به ربات دیگه‌ایه
+                return;
             }
             cmd = cmdPart;
         }
 
-        // ====== لیست دستورات معتبر ربات ======
+        // ====== لیست دستورات معتبر ======
         const validCommands = [
-            '/start', '/play', '/playhard', '/playbest3', '/play2p',
-            '/stats', '/leaderboard', '/reset', '/help', '/tournament', '/cancel'
+            '/start', '/play2p', '/stats', '/leaderboard', '/reset',
+            '/help', '/tournament', '/cancel'
         ];
 
-        // ====== اگه دستور معتبر نیست، نادیده بگیر ======
         if (!validCommands.includes(cmd)) {
             return;
         }
@@ -130,15 +128,6 @@ class RockPaperScissorsBot {
         switch (cmd) {
             case '/start':
                 await this.startCommand(chatId, userId, isGroup, username);
-                break;
-            case '/play':
-                await this.playCommand(chatId, userId, 'normal', username);
-                break;
-            case '/playhard':
-                await this.playCommand(chatId, userId, 'hard', username);
-                break;
-            case '/playbest3':
-                await this.playCommand(chatId, userId, 'best3', username);
                 break;
             case '/play2p':
                 if (isGroup) {
@@ -182,16 +171,6 @@ class RockPaperScissorsBot {
     // کنسل کردن بازی
     // ============================================
     async cancelGame(chatId, userId) {
-        if (this.gameStates.has(userId)) {
-            this.gameStates.delete(userId);
-            this.clearTimer(userId);
-            const sentMsg = await this.sendMessage(chatId, '✅ بازی شما لغو شد.');
-            if (sentMsg && sentMsg.result) {
-                this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 4000);
-            }
-            return;
-        }
-
         if (this.twoPlayerGames.has(chatId)) {
             const game = this.twoPlayerGames.get(chatId);
             if (game.player1 === userId || game.player2 === userId) {
@@ -243,12 +222,10 @@ class RockPaperScissorsBot {
         const keyboard = {
             inline_keyboard: [
                 [
-                    { text: '🪨 سنگ', callback_data: 'rock' },
-                    { text: '📄 کاغذ', callback_data: 'paper' },
-                    { text: '✂️ قیچی', callback_data: 'scissors' }
+                    { text: '👥 بازی ۲ نفره', callback_data: 'start_2p_game' },
+                    { text: '🏆 تورنمنت', callback_data: 'start_tournament' }
                 ],
                 [
-                    { text: '🎮 شروع بازی', callback_data: 'start_game' },
                     { text: '📊 آمار من', callback_data: 'my_stats' },
                     { text: '🏆 جدول امتیازات', callback_data: 'show_leaderboard' }
                 ],
@@ -288,7 +265,7 @@ class RockPaperScissorsBot {
                 this.twoPlayerGames.set(chatId, game);
                 
                 const sentMsg = await this.sendMessage(chatId, 
-                    `🎮 **بازی ۲ نفره شروع شد!**\n\n` +
+                    `🎮 بازی ۲ نفره شروع شد!\n\n` +
                     `👤 ${game.username1} VS ${game.username2}\n\n` +
                     `هر دو بازیکن دست خود را انتخاب کنند.\n` +
                     `⏰ شما ۳۰ ثانیه فرصت دارید.`,
@@ -396,18 +373,18 @@ class RockPaperScissorsBot {
     async showTwoPlayerResult(chatId, game) {
         const result = gamelogic.determineWinner(game.choice1, game.choice2);
         
-        let msg = '⚔️ **نتیجه بازی ۲ نفره:**\n\n';
+        let msg = '⚔️ نتیجه بازی ۲ نفره:\n\n';
         
         if (result === 'win') {
-            msg += `🎉 **${game.username1} برنده شد!**`;
+            msg += `🎉 ${game.username1} برنده شد!`;
             await this.storage.updateStats(game.player1, chatId, 'win', game.username1);
             await this.storage.updateStats(game.player2, chatId, 'lose', game.username2);
         } else if (result === 'lose') {
-            msg += `🎉 **${game.username2} برنده شد!**`;
+            msg += `🎉 ${game.username2} برنده شد!`;
             await this.storage.updateStats(game.player1, chatId, 'lose', game.username1);
             await this.storage.updateStats(game.player2, chatId, 'win', game.username2);
         } else {
-            msg += `🤝 **مساوی!**`;
+            msg += `🤝 مساوی!`;
             await this.storage.updateStats(game.player1, chatId, 'draw', game.username1);
             await this.storage.updateStats(game.player2, chatId, 'draw', game.username2);
         }
@@ -465,60 +442,6 @@ class RockPaperScissorsBot {
     }
 
     // ============================================
-    // بازی عادی با ربات
-    // ============================================
-    async playCommand(chatId, userId, mode, username) {
-        this.clearTimer(userId);
-
-        let gameMode = 'normal';
-        let modeName = 'عادی';
-        
-        if (mode === 'hard') {
-            gameMode = 'hard';
-            modeName = 'سخت 🧠';
-        } else if (mode === 'best3' || mode === 'best_of_3') {
-            gameMode = 'best_of_3';
-            modeName = 'مسابقه‌ای (Best of 3)';
-        }
-
-        this.gameStates.set(userId, {
-            userId: userId,
-            username: username,
-            mode: gameMode,
-            round: 0,
-            userWins: 0,
-            botWins: 0,
-            userChoice: null,
-            botChoice: null,
-            history: [],
-            timestamp: Date.now(),
-            isActive: true,
-            chatId: chatId
-        });
-
-        const msg = messages.startGame(modeName, username);
-        const sentMsg = await this.sendMessage(chatId, msg, {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: '🪨 سنگ', callback_data: 'rock' },
-                        { text: '📄 کاغذ', callback_data: 'paper' },
-                        { text: '✂️ قیچی', callback_data: 'scissors' }
-                    ],
-                    [
-                        { text: '❌ لغو بازی', callback_data: 'cancel_game' }
-                    ]
-                ]
-            }
-        });
-        if (sentMsg && sentMsg.result) {
-            this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 40000);
-        }
-
-        this.setTimer(chatId, userId);
-    }
-
-    // ============================================
     // پردازش انتخاب کاربر (فقط کلمات معتبر)
     // ============================================
     async handleGameChoice(chatId, userId, text, msg, username) {
@@ -528,82 +451,11 @@ class RockPaperScissorsBot {
             return;
         }
 
-        const gameState = this.gameStates.get(userId);
-        
-        if (!gameState) {
-            return;
+        // فقط بازی ۲ نفره رو پردازش کن
+        const game = this.twoPlayerGames.get(chatId);
+        if (game && (game.player1 === userId || game.player2 === userId)) {
+            await this.handleTwoPlayerChoice(chatId, userId, text, username);
         }
-
-        if (!gameState.isActive) {
-            return;
-        }
-
-        if (this.userTimers.has(userId) && this.userTimers.get(userId).expired) {
-            const sentMsg = await this.sendMessage(chatId, '⏰ زمانت تموم شد! دوباره با /play شروع کن.');
-            if (sentMsg && sentMsg.result) {
-                this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 4000);
-            }
-            this.gameStates.delete(userId);
-            this.clearTimer(userId);
-            return;
-        }
-
-        const choice = text;
-
-        gameState.userChoice = choice;
-        gameState.round++;
-
-        const botChoice = gamelogic.getBotChoice(gameState.mode === 'hard' ? 'hard' : 'normal');
-        gameState.botChoice = botChoice;
-
-        const result = gamelogic.determineWinner(choice, botChoice);
-        gameState.history.push({ user: choice, bot: botChoice, result });
-
-        if (result === 'win') {
-            gameState.userWins++;
-        } else if (result === 'lose') {
-            gameState.botWins++;
-        }
-
-        await this.storage.updateStats(userId, chatId, result, username);
-
-        const resultMsg = messages.showResult(choice, botChoice, result, gameState, username);
-        const sentMsg = await this.sendMessage(chatId, resultMsg, {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: '🪨 سنگ', callback_data: 'rock' },
-                        { text: '📄 کاغذ', callback_data: 'paper' },
-                        { text: '✂️ قیچی', callback_data: 'scissors' }
-                    ],
-                    [
-                        { text: '📊 آمار', callback_data: 'my_stats' },
-                        { text: '🔄 بازی جدید', callback_data: 'new_game' },
-                        { text: '❌ لغو', callback_data: 'cancel_game' }
-                    ]
-                ]
-            }
-        });
-        if (sentMsg && sentMsg.result) {
-            this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 40000);
-        }
-
-        if (gameState.mode === 'best_of_3') {
-            if (gameState.userWins >= 2 || gameState.botWins >= 2) {
-                const finalMsg = gamelogic.getFinalResult(gameState, username);
-                const finalSent = await this.sendMessage(chatId, finalMsg);
-                if (finalSent && finalSent.result) {
-                    this.scheduleMessageDeletion(chatId, finalSent.result.message_id, 40000);
-                }
-                gameState.isActive = false;
-                this.gameStates.set(userId, gameState);
-                this.clearTimer(userId);
-                return;
-            }
-        }
-
-        this.clearTimer(userId);
-        this.setTimer(chatId, userId);
     }
 
     async statsCommand(chatId, userId, username) {
@@ -730,7 +582,7 @@ class RockPaperScissorsBot {
         tournament.results = [];
         this.tournaments.set(chatId, tournament);
 
-        const sentMsg = await this.sendMessage(chatId, '🏆 **تورنمنت شروع شد!**\n\n' + 
+        const sentMsg = await this.sendMessage(chatId, '🏆 تورنمنت شروع شد!\n\n' + 
             messages.showTournamentBracket(rounds, tournament.players));
         if (sentMsg && sentMsg.result) {
             this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 60000);
@@ -758,7 +610,7 @@ class RockPaperScissorsBot {
 
         this.tournamentChoices.set(chatId, {});
 
-        let msg = `⚔️ **دور ${tournament.currentRound + 1}**\n\n`;
+        let msg = `⚔️ دور ${tournament.currentRound + 1}\n\n`;
         for (const match of round) {
             if (match[1] === null) {
                 msg += `🎉 ${match[0]} به دور بعد راه یافت! (Bye)\n`;
@@ -878,7 +730,7 @@ class RockPaperScissorsBot {
             });
         }
 
-        let msg = `📊 **نتایج دور ${tournament.currentRound + 1}:**\n\n`;
+        let msg = `📊 نتایج دور ${tournament.currentRound + 1}:\n\n`;
         for (const result of results) {
             if (result.player2 === null) {
                 msg += `🎉 ${result.player1} به دور بعد راه یافت! (Bye)\n`;
@@ -942,10 +794,10 @@ class RockPaperScissorsBot {
             champion = lastRound[0][0];
         }
 
-        let msg = '🏆 **تورنمنت به پایان رسید!**\n\n';
+        let msg = '🏆 تورنمنت به پایان رسید!\n\n';
         if (champion) {
             const username = await this.getUsername(champion);
-            msg += `🎉 **قهرمان: ${username || champion}** 🎉\n\n`;
+            msg += `🎉 قهرمان: ${username || champion} 🎉\n\n`;
             msg += `👏 تبریک به قهرمان تورنمنت!\n`;
             msg += `📊 تعداد شرکت‌کنندگان: ${tournament.players.length}`;
         } else {
@@ -1006,25 +858,6 @@ class RockPaperScissorsBot {
         return null;
     }
 
-    setTimer(chatId, userId) {
-        this.clearTimer(userId);
-
-        const timer = setTimeout(async () => {
-            const gameState = this.gameStates.get(userId);
-            if (gameState && gameState.isActive) {
-                this.userTimers.set(userId, { expired: true });
-                const sentMsg = await this.sendMessage(chatId, '⏰ زمان شما به پایان رسید! لطفاً با /play دوباره شروع کنید.');
-                if (sentMsg && sentMsg.result) {
-                    this.scheduleMessageDeletion(chatId, sentMsg.result.message_id, 4000);
-                }
-                gameState.isActive = false;
-                this.gameStates.set(userId, gameState);
-            }
-        }, 30000);
-
-        this.userTimers.set(userId, { timer, expired: false });
-    }
-
     clearTimer(userId) {
         if (this.userTimers.has(userId)) {
             const data = this.userTimers.get(userId);
@@ -1044,13 +877,6 @@ class RockPaperScissorsBot {
 
     async handleCallback(chatId, userId, data, query, username) {
         switch (data) {
-            case 'rock':
-            case 'paper':
-            case 'scissors':
-                const choice = { rock: 'سنگ', paper: 'کاغذ', scissors: 'قیچی' }[data];
-                await this.handleGameChoice(chatId, userId, choice, query.message, username);
-                break;
-
             case '2p_rock':
             case '2p_paper':
             case '2p_scissors':
@@ -1073,12 +899,12 @@ class RockPaperScissorsBot {
                 await this.handleTournamentChoice(chatId, userId, tChoice);
                 break;
 
-            case 'start_game':
-                await this.playCommand(chatId, userId, 'normal', username);
-                break;
-
             case 'start_2p_game':
                 await this.startTwoPlayerGame(chatId, userId, username);
+                break;
+
+            case 'start_tournament':
+                await this.tournamentCommand(chatId, userId, username);
                 break;
 
             case 'new_2p_game':
@@ -1095,10 +921,6 @@ class RockPaperScissorsBot {
 
             case 'show_help':
                 await this.helpCommand(chatId);
-                break;
-
-            case 'new_game':
-                await this.playCommand(chatId, userId, 'normal', username);
                 break;
 
             case 'cancel_game':
